@@ -7,8 +7,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 	for (var i = 0; i < 4; i++) {
 		document.getElementById("search_engine_select_" + i).addEventListener(
 				"change", function() {
-					_save_search_engine(this, superDrag)
-					console.log(superDrag.superDrag)
+					_save_search_engine(this, superDrag);
+				}, false);
+	}
+	for (var i = 0; i < 4; i++) {
+		document.getElementById("search_engine_url_" + i).addEventListener(
+				"change", function() {
+					_add_search_engine(this, superDrag);
 				}, false);
 	}
 	if(superDrag.superDrag.type_text){
@@ -56,6 +61,14 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 			superDrag.superDrag.searchEngines[_id] = _v;
 			_save(superDrag.superDrag);
 		}
+	}
+	
+	function _add_search_engine(_id, superDrag) {// add new
+		var url = document.getElementById("search_engine_url_" + _id.title).value;
+		superDrag.superDrag.searchEngines[_id.title] = {
+			'url' : url
+		};
+		_save(superDrag.superDrag);
 	}
 
 	function _save(superDrag) {

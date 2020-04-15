@@ -38,7 +38,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
             if (event.dataTransfer.types.includes('text/plain')) {
                 if (superDrag.superDrag.type_text && !isTextArea(event.target)) {
                     const keyword = event.dataTransfer.getData('text/plain');
-                    _dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[searchEng]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    if (superDrag.superDrag.searchEngines[searchEng].url){
+                        _dic['url'] = superDrag.superDrag.searchEngines[searchEng].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        _dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[searchEng]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
                     chrome.runtime.sendMessage(_dic);
                     event.preventDefault();
                 }
