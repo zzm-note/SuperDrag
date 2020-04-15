@@ -1,0 +1,17 @@
+{
+	"name" : {
+		"message": "SuperDrag"
+	},
+	"desc" : {
+		"message" : "拖拽文本搜索和链接"
+	},
+	"fieldtext0" : {
+		"message" : "文本类型"
+	},
+	"text0" : {
+		"message" : "是否支持文本拖拽"
+	},
+	"custom_search" : {
+		"message" : "自定义"
+	}
+}

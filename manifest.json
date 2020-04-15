@@ -1,0 +1,24 @@
+{
+	"name" : "__MSG_name__",
+	"version" : "1.0",
+	"manifest_version" : 2,
+	"description" : "__MSG_desc__",
+	"icons" : {
+		"16" : "img/icon16.png",
+		"48" : "img/icon48.png",
+		"128" : "img/icon128.png"
+	},
+	"default_locale" : "zh",
+	"background" : {
+		"scripts": ["eventpage.js"],
+		"persistent": false
+	},
+	"content_scripts" : [{
+				"matches" : ["<all_urls>"],
+				"all_frames": true,
+				"js" : ["common.js", "superdrag.js"],
+				"run_at" : "document_start"
+			}],
+	"permissions" : ["storage", "tabs"],
+	"options_page" : "options.html"
+}
