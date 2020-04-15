@@ -10,7 +10,7 @@
 	},
 	"default_locale" : "zh",
 	"background" : {
-		"scripts": ["eventpage.js"],
+		"scripts": ["eventpage.js", "common.js", "superdrag.js"],
 		"persistent": false
 	},
 	"content_scripts" : [{
