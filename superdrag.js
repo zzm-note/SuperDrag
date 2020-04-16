@@ -1,5 +1,5 @@
 chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
-    if (superDrag.superDrag.type_text) {
+    if (superDrag.superDrag.effect_text) {
         var _dic = {};
         var searchEng;
         const isTextArea = element => element.matches(
@@ -12,7 +12,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
         }, false);
         document.addEventListener('dragover', event => {
             if (event.dataTransfer.types.includes('text/plain')) {
-                if (superDrag.superDrag.type_text && !isTextArea(event.target)) {
+                if (superDrag.superDrag.effect_text && !isTextArea(event.target)) {
                     event.dataTransfer.dropEffect = 'link';
                     event.preventDefault();
                 }
@@ -36,7 +36,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
                 }
             }
             if (event.dataTransfer.types.includes('text/plain')) {
-                if (superDrag.superDrag.type_text && !isTextArea(event.target)) {
+                if (superDrag.superDrag.effect_text && !isTextArea(event.target)) {
                     const keyword = event.dataTransfer.getData('text/plain');
                     if (superDrag.superDrag.searchEngines[searchEng].url){
                         _dic['url'] = superDrag.superDrag.searchEngines[searchEng].url.replace(/%s/gi, encodeURIComponent(keyword));

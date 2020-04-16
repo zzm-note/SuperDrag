@@ -1,9 +1,12 @@
 function _getDefault() {
 	return {
-		type_text : true,
+		effect_text : true,
+		text_type : [0, 0, 0, 0],
 		searchEngines : [0, 1, 11, 3]
 	};
 }
+
+var _text_type = ["\u641C\u7D22", "\u7FFB\u8BD1", "\u590D\u5236"];
 
 var _build_in_seach_engines = [{
 			"name" : "wikipedia",
