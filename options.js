@@ -6,6 +6,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 						console.log(superDrag);
 					}, false);
 	for (var i = 0; i < 4; i++) {
+		document.getElementById("open_type_" + i).addEventListener(
+				"change", function() {
+					_save_open_type(this, superDrag);
+				}, false);
+	}
+	for (var i = 0; i < 4; i++) {
 		document.getElementById("text_type_" + i).addEventListener(
 				"change", function() {
 					_save_text_type(this, superDrag);
@@ -29,8 +35,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 	document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
 	document.getElementById('text0').innerHTML = chrome.i18n.getMessage('text0');
 	for (var i = 0; i < 4; i++) {
+		var types = superDrag.superDrag.open_type;
+		var _s = _init_open_type(i);
+		_s.selectedIndex = types[i];
+	}
+	for (var i = 0; i < 4; i++) {
 		var types = superDrag.superDrag.text_type;
-		console.log(types);
 		var _s = _init_text_type(i);
 		if (types[i].toString() != '0'){
 			document.getElementById("search_engine_select_" + i).style.display = "none";
@@ -59,6 +69,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 		}
 	}
 
+	function _init_open_type(_id) {
+		var _select = document.getElementById("open_type_" + _id);
+		if (!_select.options.length) {
+			for (var i = 0; i < _open_type.length; i++) {
+				_select.add(new Option(_open_type[i], i, false));
+			}
+		}
+		return _select;
+	}
+
 	function _init_text_type(_id) {
 		var _select = document.getElementById("text_type_" + _id);
 		if (!_select.options.length) {
@@ -79,6 +99,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag){
 					false, false));
 		}
 		return _select;
+	}
+
+	function _save_open_type(_select, superDrag) {// select
+		var _id = _select.title;
+		var _v = _select.options[_select.selectedIndex].value;
+		superDrag.superDrag.open_type[_id] = _v;
+		_save(superDrag.superDrag)
 	}
 
 	function _save_text_type(_select, superDrag) {// select
