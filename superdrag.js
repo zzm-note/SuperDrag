@@ -1,4 +1,12 @@
 chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
+    async function copyPageUrl(select) {
+      try {
+        await navigator.clipboard.writeText(select.href);
+        console.log('Page URL copied to clipboard');
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
     if (superDrag.superDrag.effect_text) {
         const _dic = {};
         let searchEng;
