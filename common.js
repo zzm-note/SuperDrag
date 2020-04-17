@@ -1,12 +1,13 @@
 function _getDefault() {
 	return {
-		effect_text : true,
+		effect_text : 0,
 		open_type : [0, 0, 0, 0],
 		text_type : [0, 0, 0, 0],
 		searchEngines : [0, 1, 11, 3]
 	};
 }
 
+var _effect_text = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
 var _open_type = ["\u524D\u53F0", "\u540E\u53F0"];
 var _text_type = ["\u641C\u7D22", "\u7FFB\u8BD1", "\u590D\u5236"];
 

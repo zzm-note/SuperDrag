@@ -8,8 +8,8 @@
 	"fieldtext0" : {
 		"message" : "文本类型"
 	},
-	"text0" : {
-		"message" : "是否支持文本拖拽"
+	"fieldlink0" : {
+		"message" : "链接类型"
 	},
 	"custom_search" : {
 		"message" : "自定义"

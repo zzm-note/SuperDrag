@@ -1,7 +1,7 @@
 chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
     if (superDrag.superDrag.effect_text) {
-        var _dic = {};
-        var searchEng;
+        const _dic = {};
+        let searchEng;
         const isTextArea = element => element.matches(
             'input[type="email"], input[type="number"], input[type="password"], input[type="search"], ' +
             'input[type="tel"], input[type="text"], input[type="url"], textarea'
@@ -135,7 +135,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function(superDrag) {
         }
 
         document.addEventListener('mousedown', event => {
-            if (event.button == 0 && !event.altKey && event.target.matches('a[href], a[href] *')) {
+            if (event.button === 0 && !event.altKey && event.target.matches('a[href], a[href] *')) {
                 new LinkDragSelection(event);
             }
         }, false);
