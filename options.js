@@ -7,6 +7,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             _save_effect_text(this, superDrag);
             console.log(superDrag);
         }, false);
+	document.getElementById("effect_link").addEventListener(
+        "change", function () {
+            _save_effect_link(this, superDrag);
+            console.log(superDrag);
+        }, false);
     for (i = 0; i < 4; i++) {
         document.getElementById("open_type_" + i).addEventListener(
             "change", function () {
@@ -14,9 +19,21 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             }, false);
     }
     for (i = 0; i < 4; i++) {
+        document.getElementById("open_type_link_" + i).addEventListener(
+            "change", function () {
+                _save_open_type_link(this, superDrag);
+            }, false);
+    }
+    for (i = 0; i < 4; i++) {
         document.getElementById("text_type_" + i).addEventListener(
             "change", function () {
                 _save_text_type(this, superDrag);
+            }, false);
+    }
+    for (i = 0; i < 4; i++) {
+        document.getElementById("link_type_" + i).addEventListener(
+            "change", function () {
+                _save_link_type(this, superDrag);
             }, false);
     }
     for (i = 0; i < 4; i++) {
@@ -31,15 +48,32 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 _add_search_engine(this, superDrag);
             }, false);
     }
+    document.getElementById("enable_link_text_select").addEventListener(
+            "change", function () {
+                superDrag.superDrag.linkTextSelect = this.checked;
+                _save(superDrag.superDrag);
+            }, false);
     for (i = 0; i < 3; i++) {
         _s = _init_effect_text(i);
     }
     _s.selectedIndex = superDrag.superDrag.effect_text;
     _load_effect_text(superDrag.superDrag.effect_text);
+    for (i = 0; i < 3; i++) {
+        _s = _init_effect_link(i);
+    }
+    _s.selectedIndex = superDrag.superDrag.effect_link;
+    _load_effect_link(superDrag.superDrag.effect_link);
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
+    document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
+    document.getElementById('enableLinkTextSelect').innerHTML = chrome.i18n.getMessage('enableLinkTextSelect');
     for (i = 0; i < 4; i++) {
 		types = superDrag.superDrag.open_type;
 		_s = _init_open_type(i);
+		_s.selectedIndex = types[i];
+    }
+    for (i = 0; i < 4; i++) {
+		types = superDrag.superDrag.open_type_link;
+		_s = _init_open_type_link(i);
 		_s.selectedIndex = types[i];
     }
     for (i = 0; i < 4; i++) {
@@ -55,6 +89,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         }
         _s.selectedIndex = types[i];
     }
+    for (i = 0; i < 4; i++) {
+        types = superDrag.superDrag.link_type;
+        _s = _init_link_type(i);
+        _s.selectedIndex = types[i];
+    }
+    document.getElementById("enable_link_text_select").checked = superDrag.superDrag.linkTextSelect;
 
     function _load_effect_text(_id) {
         if (_id === 1) {
@@ -75,6 +115,31 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [0, 1, 2, 3]) {
             	document.getElementById("test_" + i).style.display = "";
             }
+        }
+    }
+
+    function _load_effect_link(_id) {
+        if (_id === 1) {
+			for (i of [0, 1]) {
+				document.getElementById("link_" + i).style.display = "";
+            }
+            for (i of [2, 3]) {
+            	document.getElementById("link_" + i).style.display = "none";
+            }
+            document.getElementById("linkTextSelect").style.display = "";
+        } else if (_id === 2) {
+			for (i of [0, 1]) {
+				document.getElementById("link_" + i).style.display = "none";
+            }
+            for (i of [2, 3]) {
+            	document.getElementById("link_" + i).style.display = "";
+            }
+            document.getElementById("linkTextSelect").style.display = "none";
+        } else if (_id === 0) {
+            for (i of [0, 1, 2, 3]) {
+            	document.getElementById("link_" + i).style.display = "";
+            }
+            document.getElementById("linkTextSelect").style.display = "none";
         }
     }
 
@@ -104,8 +169,28 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_effect_link() {
+		const _select = document.getElementById("effect_link");
+		if (!_select.options.length) {
+            for (let i = 0; i < _effect_link.length; i++) {
+                _select.add(new Option(_effect_link[i], i, false));
+            }
+        }
+        return _select;
+    }
+
     function _init_open_type(_id) {
 		const _select = document.getElementById("open_type_" + _id);
+		if (!_select.options.length) {
+            for (let i = 0; i < _open_type.length; i++) {
+                _select.add(new Option(_open_type[i], i, false));
+            }
+        }
+        return _select;
+    }
+
+    function _init_open_type_link(_id) {
+		const _select = document.getElementById("open_type_link_" + _id);
 		if (!_select.options.length) {
             for (let i = 0; i < _open_type.length; i++) {
                 _select.add(new Option(_open_type[i], i, false));
@@ -119,6 +204,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
 		if (!_select.options.length) {
             for (let i = 0; i < _text_type.length; i++) {
                 _select.add(new Option(_text_type[i], i, false));
+            }
+        }
+        return _select;
+    }
+
+    function _init_link_type(_id) {
+		const _select = document.getElementById("link_type_" + _id);
+		if (!_select.options.length) {
+            for (let i = 0; i < _link_type.length; i++) {
+                _select.add(new Option(_link_type[i], i, false));
             }
         }
         return _select;
@@ -143,6 +238,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _save(superDrag.superDrag)
     }
 
+    function _save_effect_link(_select, superDrag) {// select
+		const _v = _select.options[_select.selectedIndex].value;
+		_load_effect_link(Number(_v));
+        superDrag.superDrag.effect_link = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
     function _save_open_type(_select, superDrag) {// select
 		const _id = _select.getAttribute("myAttr");
 		const _v = _select.options[_select.selectedIndex].value;
@@ -150,10 +252,17 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _save(superDrag.superDrag)
     }
 
+    function _save_open_type_link(_select, superDrag) {// select
+		const _id = _select.getAttribute("myAttr");
+		const _v = _select.options[_select.selectedIndex].value;
+		superDrag.superDrag.open_type_link[_id] = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
     function _save_text_type(_select, superDrag) {// select
 		const _id = _select.getAttribute("myAttr");
 		const _v = _select.options[_select.selectedIndex].value;
-		if (Number(_v) === 1 || Number(_v) === 2) {
+		if (Number(_v) === 1) {
             document.getElementById("search_engine_select_" + _id).style.display = "none";
             document.getElementById("search_engine_url_" + _id).style.display = "none";
         } else {
@@ -164,6 +273,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         }
         _load_search_engine();
         superDrag.superDrag.text_type[_id] = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
+    function _save_link_type(_select, superDrag) {// select
+		const _id = _select.getAttribute("myAttr");
+		const _v = _select.options[_select.selectedIndex].value;
+        superDrag.superDrag.link_type[_id] = Number(_v);
         _save(superDrag.superDrag)
     }
 

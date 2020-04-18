@@ -1,15 +1,21 @@
 function _getDefault() {
 	return {
 		effect_text : 0,
-		open_type : [0, 0, 0, 0],
+		open_type : [1, 1, 1, 1],
 		text_type : [0, 0, 0, 0],
-		searchEngines : [0, 1, 11, 3]
+		searchEngines : [0, 1, 11, 3],
+		effect_link : 0,
+		open_type_link : [1, 1, 1, 1],
+		link_type : [1, 0, 0, 0],
+		linkTextSelect : true
 	};
 }
 
 var _effect_text = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
 var _open_type = ["\u524D\u53F0", "\u540E\u53F0"];
-var _text_type = ["\u641C\u7D22", "\u7FFB\u8BD1", "\u590D\u5236"];
+var _text_type = ["\u641C\u7D22", "\u590D\u5236"];
+var _effect_link = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
+var _link_type = ["\u6253\u5F00", "\u590D\u5236\u94FE\u63A5url", "\u590D\u5236\u94FE\u63A5\u6587\u672C"];
 
 var _build_in_seach_engines = [{
 			"name" : "wikipedia",

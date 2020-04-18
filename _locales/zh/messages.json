@@ -13,5 +13,8 @@
 	},
 	"custom_search" : {
 		"message" : "自定义"
+	},
+	"enableLinkTextSelect" : {
+		"message" : "水平拖动用以选择链接文本"
 	}
 }
