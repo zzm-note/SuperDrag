@@ -196,11 +196,14 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 }
                 event.preventDefault();
             } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                const reg = /^<[Aa]\s+(.*?\s+)*?href\s*=\s*(['"]).+?\2(\s+.*?\s*)*?>(.+?)<\/[Aa]>$/m;
+                const reg_a = /^<[Aa]\s+(.*?\s+)*?href\s*=\s*(['"]).+?\2(\s+.*?\s*)*?>(.+?)<\/[Aa]>$/m;
+                const reg_img = /^<(img|IMG)\s+(.*?\s+)*?src\s*=\s*(['"]).+?\3(\s+.*?\s*)*?>$/m;
                 items = event.dataTransfer.getData('text/html');
                 items_mod = items.replace(/\s/g," ");
-                if(reg.test(items_mod)){
-                    copyAny(reg.exec(items_mod)[4]);
+                if(reg_a.test(items_mod)){
+                    copyAny(reg_a.exec(items_mod)[4]);
+                } else if (reg_img.test(items_mod)){
+                    copyAny(event.dataTransfer.getData('text/html'));
                 } else {
                     _dic['url'] = event.dataTransfer.getData('text');
                     _dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
