@@ -183,10 +183,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 chrome.runtime.sendMessage(_dic);
                 event.preventDefault();
             } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                const reg = /^<[Aa]\s+(.*?\s+)*?href\s*=\s*(['"]).+?\2(\s+.*?\s*)*?>(.+?)<\/[Aa]>$/m;
+                const reg_a = /^<[Aa]\s+(.*?\s+)*?href\s*=\s*(['"]).+?\2(\s+.*?\s*)*?>(.+?)<\/[Aa]>$/m;
+                const reg_img = /^<(img|IMG)\s+(.*?\s+)*?src\s*=\s*(['"]).+?\3(\s+.*?\s*)*?>$/m;
                 items = event.dataTransfer.getData('text/html');
                 items_mod = items.replace(/\s/g," ");
-                if(reg.test(items_mod)){
+                if(reg_a.test(items_mod) || reg_img.test(items_mod)){
                     copyAny(event.dataTransfer.getData('text'));
                 } else {
                     _dic['url'] = event.dataTransfer.getData('text');
