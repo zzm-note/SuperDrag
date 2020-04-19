@@ -78,7 +78,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 const y = Math.abs(this.screenY - this.moveY);
                 if (x > y) {
                     this.selectionStart();
-                } else if (x >= 4 || y >= 4) {
+                }
+                if (x >= 4 || y >= 4) {
                     this.uninit();
                 }
             }
