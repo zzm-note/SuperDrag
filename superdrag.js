@@ -51,7 +51,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         event.currentTarget.removeEventListener(event.type, this, false);
                         if (this.moved_flag) {
                             event.preventDefault();
-                            event.stopPropagation();
+                            // event.stopPropagation();
                         } else {
                             this.checkXY();
                         }
@@ -60,7 +60,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         event.currentTarget.removeEventListener(event.type, this, false);
                         if (!getSelection().isCollapsed) {
                             event.preventDefault();
-                            event.stopPropagation();
+                            // event.stopPropagation();
                         }
                         break;
                 }
@@ -103,11 +103,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             });
     }
 
+    const isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
     const _dic = {};
     const isTextArea = element => element.matches(
         'input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], textarea'
     ) && !element.disabled;
     document.addEventListener('dragstart', event => {
+        _dic.start_time = new Date().getTime();
         _dic.startX = event.x;
         _dic.startY = event.y;
     }, false);
@@ -123,108 +125,112 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         }
     }, false);
     document.addEventListener('drop', event => {
-        let items;
-        let position_text;
-        let position_link;
-        _dic.endX = event.x;
-        _dic.endY = event.y;
-        let moveX = _dic.endX - _dic.startX;
-        let moveY = _dic.endY - _dic.startY;
-        if (superDrag.superDrag.effect_text === 0) {
-            if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                position_text = 0;
-            } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                position_text = 1;
-            } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                position_text = 2;
-            } else {
-                position_text = 3;
-            }
-        } else if (superDrag.superDrag.effect_text === 1) {
-            if (moveY < 0) {
-                position_text = 0;
-            } else {
-                position_text = 1;
-            }
-        } else if (superDrag.superDrag.effect_text === 2) {
-            if (moveX < 0) {
-                position_text = 2;
-            } else {
-                position_text = 3;
-            }
-        }
-        if (superDrag.superDrag.effect_link === 0) {
-            if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                position_link = 0;
-            } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                position_link = 1;
-            } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                position_link = 2;
-            } else {
-                position_link = 3;
-            }
-        } else if (superDrag.superDrag.effect_link === 1) {
-            if (moveY < 0) {
-                position_link = 0;
-            } else {
-                position_link = 1;
-            }
-        } else if (superDrag.superDrag.effect_link === 2) {
-            if (moveX < 0) {
-                position_link = 2;
-            } else {
-                position_link = 3;
-            }
-        }
-        let keyword = event.dataTransfer.getData('text/plain');
-        let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-        if (event.dataTransfer.types.includes('text/uri-list')) {
-            if (superDrag.superDrag.link_type[position_link] === 0) {
-                _dic['url'] = keyword
-                _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                chrome.runtime.sendMessage(_dic);
-                event.preventDefault();
-            } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                copyAny(keyword);
-                event.preventDefault();
-            } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                items = event.dataTransfer.getData('text/html');
-                let domparser = new DOMParser();
-                let doc = domparser.parseFromString(items, 'text/html');
-                if (doc.links.length) {
-                    copyAny(doc.links[0].text);
-                } else if (doc.images.length) {
-                    copyAny(doc.images[0].src);
+        _dic.stop_time = new Date().getTime();
+        time_collect = parseInt(_dic.stop_time - _dic.start_time);
+        if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
+            && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (isMac && !event.metaKey))))){
+            let items;
+            let position_text;
+            let position_link;
+            _dic.endX = event.x;
+            _dic.endY = event.y;
+            let moveX = _dic.endX - _dic.startX;
+            let moveY = _dic.endY - _dic.startY;
+            if (superDrag.superDrag.effect_text === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_text = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_text = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_text = 2;
                 } else {
+                    position_text = 3;
+                }
+            } else if (superDrag.superDrag.effect_text === 1) {
+                if (moveY < 0) {
+                    position_text = 0;
+                } else {
+                    position_text = 1;
+                }
+            } else if (superDrag.superDrag.effect_text === 2) {
+                if (moveX < 0) {
+                    position_text = 2;
+                } else {
+                    position_text = 3;
+                }
+            }
+            if (superDrag.superDrag.effect_link === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_link = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_link = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_link = 2;
+                } else {
+                    position_link = 3;
+                }
+            } else if (superDrag.superDrag.effect_link === 1) {
+                if (moveY < 0) {
+                    position_link = 0;
+                } else {
+                    position_link = 1;
+                }
+            } else if (superDrag.superDrag.effect_link === 2) {
+                if (moveX < 0) {
+                    position_link = 2;
+                } else {
+                    position_link = 3;
+                }
+            }
+            let keyword = event.dataTransfer.getData('text/plain');
+            let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+            if (event.dataTransfer.types.includes('text/uri-list')) {
+                if (superDrag.superDrag.link_type[position_link] === 0) {
+                    _dic['url'] = keyword
+                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    chrome.runtime.sendMessage(_dic);
+                    event.preventDefault();
+                } else if (superDrag.superDrag.link_type[position_link] === 1) {
                     copyAny(keyword);
+                    event.preventDefault();
+                } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                    items = event.dataTransfer.getData('text/html');
+                    let domparser = new DOMParser();
+                    let doc = domparser.parseFromString(items, 'text/html');
+                    if (doc.links.length) {
+                        copyAny(doc.links[0].text);
+                    } else if (doc.images.length) {
+                        copyAny(doc.images[0].src);
+                    } else {
+                        copyAny(keyword);
+                    }
+                    event.preventDefault();
                 }
-                event.preventDefault();
-            }
-        } else if (urlPattern.test(keyword)) {
-            if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
-                keyword = "https://" + keyword;
-                _dic['url'] = keyword;
-                _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                chrome.runtime.sendMessage(_dic);
-                event.preventDefault();
-            } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
-                copyAny(keyword);
-                event.preventDefault();
-            }
-        } else if (event.dataTransfer.types.includes('text/plain')) {
-            if (superDrag.superDrag.text_type[position_text] === 0 && !isTextArea(event.target)) {
-                console.log("ddddddddddddddddddddd");
-                if (superDrag.superDrag.searchEngines[position_text].url) {
-                    _dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
-                } else {
-                    _dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+            } else if (urlPattern.test(keyword)) {
+                if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
+                    keyword = "https://" + keyword;
+                    _dic['url'] = keyword;
+                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    chrome.runtime.sendMessage(_dic);
+                    event.preventDefault();
+                } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
+                    copyAny(keyword);
+                    event.preventDefault();
                 }
-                _dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
-                chrome.runtime.sendMessage(_dic);
-                event.preventDefault();
-            } else if (superDrag.superDrag.text_type[position_text] === 1 && !isTextArea(event.target)) {
-                copyAny(keyword)
-                event.preventDefault();
+            } else if (event.dataTransfer.types.includes('text/plain')) {
+                if (superDrag.superDrag.text_type[position_text] === 0 && !isTextArea(event.target)) {
+                    if (superDrag.superDrag.searchEngines[position_text].url) {
+                        _dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        _dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    _dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                    chrome.runtime.sendMessage(_dic);
+                    event.preventDefault();
+                } else if (superDrag.superDrag.text_type[position_text] === 1 && !isTextArea(event.target)) {
+                    copyAny(keyword)
+                    event.preventDefault();
+                }
             }
         }
     }, false);

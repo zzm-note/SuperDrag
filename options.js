@@ -5,7 +5,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("effect_text").addEventListener(
         "change", function () {
             _save_effect_text(this, superDrag);
-            console.log(superDrag);
         }, false);
     document.getElementById("effect_link").addEventListener(
         "change", function () {
@@ -52,6 +51,24 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             superDrag.superDrag.linkTextSelect = this.checked;
             _save(superDrag.superDrag);
         }, false);
+    document.getElementById("enableAlt").addEventListener(
+        "change", function () {
+            superDrag.superDrag.enableAlt = this.checked;
+            _save(superDrag.superDrag);
+            console.log(superDrag);
+        }, false);
+    document.getElementById("timeout").addEventListener(
+        "change", function () {
+            if(isNaN(this.value) || this.value.length === 0) {
+                alert("\u4E0D\u80FD\u8F93\u5165\u7A7A\u6216\u975E\u6574\u578B\uFF01");
+                document.getElementById('timeout').value = superDrag.superDrag.timeout;
+            } else {
+                superDrag.superDrag.timeout = Number(this.value);
+                _save(superDrag.superDrag);
+            }
+        }, false);
+
+    document.getElementById('timeout').value = superDrag.superDrag.timeout;
     for (i = 0; i < 3; i++) {
         _s = _init_effect_text(i);
     }
@@ -62,9 +79,14 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     }
     _s.selectedIndex = superDrag.superDrag.effect_link;
     _load_effect_link(superDrag.superDrag.effect_link);
+    document.getElementById('common').innerHTML = chrome.i18n.getMessage('common');
+    document.getElementById('enableAlt_text').innerHTML = chrome.i18n.getMessage('enableAlt_text');
+    document.getElementById('timeout_des').innerHTML = chrome.i18n.getMessage('timeout_des');
+    document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('enableLinkTextSelect').innerHTML = chrome.i18n.getMessage('enableLinkTextSelect');
+    document.getElementById('searchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
         _s = _init_open_type(i);
@@ -101,6 +123,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _s.selectedIndex = types[i];
     }
     document.getElementById("enable_link_text_select").checked = superDrag.superDrag.linkTextSelect;
+    document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
 
     function _load_effect_text(_id) {
         if (_id === 1) {

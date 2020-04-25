@@ -1,5 +1,7 @@
 function _getDefault() {
 	return {
+		enableAlt : true,
+		timeout : 500,
 		effect_text : 0,
 		open_type : [0, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
