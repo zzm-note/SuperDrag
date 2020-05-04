@@ -41,9 +41,21 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             }, false);
     }
     for (i = 0; i < 4; i++) {
+        document.getElementById("link_search_engine_select_" + i).addEventListener(
+            "change", function () {
+                _save_link_search_engine(this, superDrag);
+            }, false);
+    }
+    for (i = 0; i < 4; i++) {
         document.getElementById("search_engine_url_" + i).addEventListener(
             "change", function () {
                 _add_search_engine(this, superDrag);
+            }, false);
+    }
+    for (i = 0; i < 4; i++) {
+        document.getElementById("link_search_engine_url_" + i).addEventListener(
+            "change", function () {
+                _add_link_search_engine(this, superDrag);
             }, false);
     }
     document.getElementById("enable_link_text_select").addEventListener(
@@ -87,6 +99,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('enableLinkTextSelect').innerHTML = chrome.i18n.getMessage('enableLinkTextSelect');
     document.getElementById('searchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
+    document.getElementById('linkSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
         _s = _init_open_type(i);
@@ -115,10 +128,19 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.link_type;
         _s = _init_link_type(i);
-        if (types[i]) {
-            document.getElementById("open_type_link_" + i).style.display = "none";
-        } else {
+        if (types[i] === 0) {
             document.getElementById("open_type_link_" + i).style.display = "";
+            document.getElementById("link_search_engine_select_" + i).style.display = "none";
+            document.getElementById("link_search_engine_url_" + i).style.display = "none";
+        } else if (types[i] === 3) {
+            document.getElementById("open_type_link_" + i).style.display = "";
+            document.getElementById("link_search_engine_select_" + i).style.display = "";
+            document.getElementById("link_search_engine_url_" + i).style.display = "";
+            _load_link_search_engine()
+        } else {
+            document.getElementById("open_type_link_" + i).style.display = "none";
+            document.getElementById("link_search_engine_select_" + i).style.display = "none";
+            document.getElementById("link_search_engine_url_" + i).style.display = "none";
         }
         _s.selectedIndex = types[i];
     }
@@ -155,7 +177,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("link_" + i).style.display = "none";
             }
-            document.getElementById("linkTextSelect").style.display = "";
+            document.getElementById("linkTextSelect").style.display = "none";
         } else if (_id === 2) {
             for (i of [0, 1]) {
                 document.getElementById("link_" + i).style.display = "none";
@@ -184,6 +206,22 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 document.getElementById("search_engine_url_" + i).value = _build_in_seach_engines[engines[i]].url;
                 _s.selectedIndex = engines[i];
                 document.getElementById("search_engine_url_" + i).readOnly = true;
+            }
+        }
+    }
+
+    function _load_link_search_engine() {
+        for (let i = 0; i < 4; i++) {
+            const engines = superDrag.superDrag.linkSearchEngines;
+            const _s = _init_link_selects(i);
+            if (isNaN(engines[i])) {// user search engines
+                document.getElementById("link_search_engine_url_" + i).value = engines[i].url;
+                _s.selectedIndex = _build_in_seach_engines.length;
+                document.getElementById("link_search_engine_url_" + i).readOnly = false;
+            } else {// build-in
+                document.getElementById("link_search_engine_url_" + i).value = _build_in_seach_engines[engines[i]].url;
+                _s.selectedIndex = engines[i];
+                document.getElementById("link_search_engine_url_" + i).readOnly = true;
             }
         }
     }
@@ -260,6 +298,18 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_link_selects(_id) {
+        const _select = document.getElementById("link_search_engine_select_" + _id);
+        if (!_select.options.length) {
+            for (let i = 0; i < _build_in_seach_engines.length; i++) {
+                _select.add(new Option(_build_in_seach_engines[i].name, i, false));
+            }
+            _select.add(new Option(chrome.i18n.getMessage("custom_search"), -1,
+                false, false));
+        }
+        return _select;
+    }
+
     function _save_effect_text(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
         _load_effect_text(Number(_v));
@@ -310,11 +360,20 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     function _save_link_type(_select, superDrag) {// select
         const _id = _select.getAttribute("myAttr");
         const _v = _select.options[_select.selectedIndex].value;
-        if (Number(_v) === 1 || Number(_v) === 2) {
-            document.getElementById("open_type_link_" + _id).style.display = "none";
-        } else {
+        if (Number(_v) === 0) {
             document.getElementById("open_type_link_" + _id).style.display = "";
+            document.getElementById("link_search_engine_select_" + _id).style.display = "none";
+            document.getElementById("link_search_engine_url_" + _id).style.display = "none";
+        } else if (Number(_v) === 3){
+            document.getElementById("open_type_link_" + _id).style.display = "";
+            document.getElementById("link_search_engine_select_" + _id).style.display = "";
+            document.getElementById("link_search_engine_url_" + _id).style.display = "";
+        } else {
+            document.getElementById("open_type_link_" + _id).style.display = "none";
+            document.getElementById("link_search_engine_select_" + _id).style.display = "none";
+            document.getElementById("link_search_engine_url_" + _id).style.display = "none";
         }
+        _load_link_search_engine();
         superDrag.superDrag.link_type[_id] = Number(_v);
         _save(superDrag.superDrag)
     }
@@ -336,9 +395,36 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         }
     }
 
+    function _save_link_search_engine(_select, superDrag) {// select
+        const _id = _select.getAttribute("myAttr");
+        const _v = _select.options[_select.selectedIndex].value;
+        console.log("aaaaaaaaaaaaaaaa"+ _v);
+        if (Number(_v) === -1) {// add new
+            if (isNaN(superDrag.superDrag.linkSearchEngines[_id]))// still from select
+                document.getElementById("link_search_engine_url_" + _id).value = superDrag.superDrag.linkSearchEngines[_id].url;
+            else
+                console.log("bbbbbbbb");
+            document.getElementById("link_search_engine_url_" + _id).value = "";
+            document.getElementById("link_search_engine_url_" + _id).readOnly = false;
+        } else {// select from build-in
+            document.getElementById("link_search_engine_url_" + _id).value = _build_in_seach_engines[_v].url;
+            document.getElementById("link_search_engine_url_" + _id).readOnly = true;
+            superDrag.superDrag.linkSearchEngines[_id] = Number(_v);
+            _save(superDrag.superDrag);
+        }
+    }
+
     function _add_search_engine(_id, superDrag) {// add new
         const url = document.getElementById("search_engine_url_" + _id.getAttribute("myAttr")).value;
         superDrag.superDrag.searchEngines[_id.getAttribute("myAttr")] = {
+            'url': url
+        };
+        _save(superDrag.superDrag);
+    }
+
+    function _add_link_search_engine(_id, superDrag) {// add new
+        const url = document.getElementById("link_search_engine_url_" + _id.getAttribute("myAttr")).value;
+        superDrag.superDrag.linkSearchEngines[_id.getAttribute("myAttr")] = {
             'url': url
         };
         _save(superDrag.superDrag);

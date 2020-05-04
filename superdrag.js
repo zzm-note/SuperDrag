@@ -1,96 +1,96 @@
 chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
-    if (superDrag.superDrag.effect_link === 1 && superDrag.superDrag.linkTextSelect) {
-        // The original code is copyrighted by Griever and licensed under the MIT license.
-        class LinkDragSelection {
-            constructor() {
-                this.init(...arguments);
-            }
-
-            init(event) {
-                this.moved_flag = false;
-                this.range = document.caretRangeFromPoint(event.clientX, event.clientY);
-                const sel = getSelection();
-                if (!sel.isCollapsed &&
-                    sel.getRangeAt(0).isPointInRange(this.range.startContainer, this.range.startOffset)) {
-                    return;
-                }
-                this.screenX = event.screenX;
-                this.screenY = event.screenY;
-                document.addEventListener('mousemove', this, false);
-                document.addEventListener('mouseup', this, false);
-            }
-
-            uninit() {
-                this.moved_flag = false;
-                document.removeEventListener('mousemove', this, false);
-                document.removeEventListener('mouseup', this, false);
-                document.removeEventListener('dragstart', this, false);
-                setTimeout(() => {
-                    document.removeEventListener('click', this, false);
-                }, 10);
-            }
-
-            handleEvent(event) {
-                switch (event.type) {
-                    case 'mousemove':
-                        if (this.moved_flag) {
-                            const range = document.caretRangeFromPoint(event.clientX, event.clientY);
-                            if (range) {
-                                getSelection().extend(range.startContainer, range.startOffset);
-                            }
-                        } else {
-                            this.moveX = event.screenX;
-                            this.moveY = event.screenY;
-                            this.checkXY();
-                        }
-                        break;
-                    case 'mouseup':
-                        this.uninit();
-                        break;
-                    case 'dragstart':
-                        event.currentTarget.removeEventListener(event.type, this, false);
-                        if (this.moved_flag) {
-                            event.preventDefault();
-                            // event.stopPropagation();
-                        } else {
-                            this.checkXY();
-                        }
-                        break;
-                    case 'click':
-                        event.currentTarget.removeEventListener(event.type, this, false);
-                        if (!getSelection().isCollapsed) {
-                            event.preventDefault();
-                            // event.stopPropagation();
-                        }
-                        break;
-                }
-            }
-
-            selectionStart() {
-                this.moved_flag = true;
-                getSelection().collapse(this.range.startContainer, this.range.startOffset);
-                document.addEventListener('dragstart', this, false);
-                document.addEventListener('click', this, false);
-            }
-
-            checkXY() {
-                const x = Math.abs(this.screenX - this.moveX);
-                const y = Math.abs(this.screenY - this.moveY);
-                if (x > y) {
-                    this.selectionStart();
-                }
-                if (x >= 4 || y >= 4) {
-                    this.uninit();
-                }
-            }
-        }
-
-        document.addEventListener('mousedown', event => {
-            if (event.button === 0 && !event.altKey && event.target.matches('a[href], a[href] *')) {
-                new LinkDragSelection(event);
-            }
-        }, false);
-    }
+    // if (superDrag.superDrag.effect_link === 1 && superDrag.superDrag.linkTextSelect) {
+    //     // The original code is copyrighted by Griever and licensed under the MIT license.
+    //     class LinkDragSelection {
+    //         constructor() {
+    //             this.init(...arguments);
+    //         }
+    //
+    //         init(event) {
+    //             this.moved_flag = false;
+    //             this.range = document.caretRangeFromPoint(event.clientX, event.clientY);
+    //             const sel = getSelection();
+    //             if (!sel.isCollapsed &&
+    //                 sel.getRangeAt(0).isPointInRange(this.range.startContainer, this.range.startOffset)) {
+    //                 return;
+    //             }
+    //             this.screenX = event.screenX;
+    //             this.screenY = event.screenY;
+    //             document.addEventListener('mousemove', this, false);
+    //             document.addEventListener('mouseup', this, false);
+    //         }
+    //
+    //         uninit() {
+    //             this.moved_flag = false;
+    //             document.removeEventListener('mousemove', this, false);
+    //             document.removeEventListener('mouseup', this, false);
+    //             document.removeEventListener('dragstart', this, false);
+    //             setTimeout(() => {
+    //                 document.removeEventListener('click', this, false);
+    //             }, 10);
+    //         }
+    //
+    //         handleEvent(event) {
+    //             switch (event.type) {
+    //                 case 'mousemove':
+    //                     if (this.moved_flag) {
+    //                         const range = document.caretRangeFromPoint(event.clientX, event.clientY);
+    //                         if (range) {
+    //                             getSelection().extend(range.startContainer, range.startOffset);
+    //                         }
+    //                     } else {
+    //                         this.moveX = event.screenX;
+    //                         this.moveY = event.screenY;
+    //                         this.checkXY();
+    //                     }
+    //                     break;
+    //                 case 'mouseup':
+    //                     this.uninit();
+    //                     break;
+    //                 case 'dragstart':
+    //                     event.currentTarget.removeEventListener(event.type, this, false);
+    //                     if (this.moved_flag) {
+    //                         event.preventDefault();
+    //                         // event.stopPropagation();
+    //                     } else {
+    //                         this.checkXY();
+    //                     }
+    //                     break;
+    //                 case 'click':
+    //                     event.currentTarget.removeEventListener(event.type, this, false);
+    //                     if (!getSelection().isCollapsed) {
+    //                         event.preventDefault();
+    //                         // event.stopPropagation();
+    //                     }
+    //                     break;
+    //             }
+    //         }
+    //
+    //         selectionStart() {
+    //             this.moved_flag = true;
+    //             getSelection().collapse(this.range.startContainer, this.range.startOffset);
+    //             document.addEventListener('dragstart', this, false);
+    //             document.addEventListener('click', this, false);
+    //         }
+    //
+    //         checkXY() {
+    //             const x = Math.abs(this.screenX - this.moveX);
+    //             const y = Math.abs(this.screenY - this.moveY);
+    //             if (x > y) {
+    //                 this.selectionStart();
+    //             }
+    //             if (x >= 4 || y >= 4) {
+    //                 this.uninit();
+    //             }
+    //         }
+    //     }
+    //
+    //     document.addEventListener('mousedown', event => {
+    //         if (event.button === 0 && !event.altKey && event.target.matches('a[href], a[href] *')) {
+    //             new LinkDragSelection(event);
+    //         }
+    //     }, false);
+    // }
 
     function copyAny(word) {
         navigator.clipboard.writeText(word)
@@ -204,6 +204,23 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     } else {
                         copyAny(keyword);
                     }
+                    event.preventDefault();
+                } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                    items = event.dataTransfer.getData('text/html');
+                    let domparser = new DOMParser();
+                    let doc = domparser.parseFromString(items, 'text/html');
+                    if (doc.links.length) {
+                        keyword = doc.links[0].text;
+                    } else if (doc.images.length) {
+                        keyword = doc.images[0].src;
+                    }
+                    if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                        _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    chrome.runtime.sendMessage(_dic);
                     event.preventDefault();
                 }
             } else if (urlPattern.test(keyword)) {

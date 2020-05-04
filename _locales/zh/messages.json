@@ -20,11 +20,14 @@
 	"searchUrlDescription" : {
 		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
 	},
+	"linkSearchUrlDescription" : {
+		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
+	},
 	"common" : {
 		"message" : "常规设置"
 	},
 	"enableAlt_text" : {
-		"message" : "拖拽过程中按下Alt(win)或command(mac)键取消拖拽操作"
+		"message" : "拖拽过程中按下Alt键取消拖拽操作(MAC原生支持，取消无效)"
 	},
 	"timeout_des" : {
 		"message" : "拖拽过程中自动取消拖拽操作的超时时间(毫秒)"
