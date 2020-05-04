@@ -3,7 +3,7 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 ### 更新日志：
 ```
 v2.0.4
-1.新增“搜索链接文本功能
+1.新增“搜索链接文本”功能
 2.取消横向拖拽选择链接文本功能，可按住Alt键选择链接文本
 3.其他优化
 
