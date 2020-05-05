@@ -398,13 +398,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     function _save_link_search_engine(_select, superDrag) {// select
         const _id = _select.getAttribute("myAttr");
         const _v = _select.options[_select.selectedIndex].value;
-        console.log("aaaaaaaaaaaaaaaa"+ _v);
         if (Number(_v) === -1) {// add new
             if (isNaN(superDrag.superDrag.linkSearchEngines[_id]))// still from select
                 document.getElementById("link_search_engine_url_" + _id).value = superDrag.superDrag.linkSearchEngines[_id].url;
             else
-                console.log("bbbbbbbb");
-            document.getElementById("link_search_engine_url_" + _id).value = "";
+                document.getElementById("link_search_engine_url_" + _id).value = "";
             document.getElementById("link_search_engine_url_" + _id).readOnly = false;
         } else {// select from build-in
             document.getElementById("link_search_engine_url_" + _id).value = _build_in_seach_engines[_v].url;

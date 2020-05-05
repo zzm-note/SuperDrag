@@ -115,12 +115,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     }, false);
     document.addEventListener('dragover', event => {
         if (event.dataTransfer.types.includes('text/uri-list')) {
-            event.dataTransfer.dropEffect = 'link';
             event.preventDefault();
+            event.dataTransfer.dropEffect = 'link';
         } else if (event.dataTransfer.types.includes('text/plain')) {
             if (!isTextArea(event.target)) {
-                event.dataTransfer.dropEffect = 'link';
                 event.preventDefault();
+                event.dataTransfer.dropEffect = 'link';
             }
         }
     }, false);
@@ -186,14 +186,15 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
             if (event.dataTransfer.types.includes('text/uri-list')) {
                 if (superDrag.superDrag.link_type[position_link] === 0) {
+                    event.preventDefault();
                     _dic['url'] = keyword
                     _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                     chrome.runtime.sendMessage(_dic);
-                    event.preventDefault();
                 } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                    copyAny(keyword);
                     event.preventDefault();
+                    copyAny(keyword);
                 } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                    event.preventDefault();
                     items = event.dataTransfer.getData('text/html');
                     let domparser = new DOMParser();
                     let doc = domparser.parseFromString(items, 'text/html');
@@ -204,8 +205,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     } else {
                         copyAny(keyword);
                     }
-                    event.preventDefault();
                 } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                    event.preventDefault();
                     items = event.dataTransfer.getData('text/html');
                     let domparser = new DOMParser();
                     let doc = domparser.parseFromString(items, 'text/html');
@@ -221,21 +222,21 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     }
                     _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                     chrome.runtime.sendMessage(_dic);
-                    event.preventDefault();
                 }
             } else if (urlPattern.test(keyword)) {
                 if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
+                    event.preventDefault();
                     keyword = "https://" + keyword;
                     _dic['url'] = keyword;
                     _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                     chrome.runtime.sendMessage(_dic);
-                    event.preventDefault();
                 } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
-                    copyAny(keyword);
                     event.preventDefault();
+                    copyAny(keyword);
                 }
             } else if (event.dataTransfer.types.includes('text/plain')) {
                 if (superDrag.superDrag.text_type[position_text] === 0 && !isTextArea(event.target)) {
+                    event.preventDefault();
                     if (superDrag.superDrag.searchEngines[position_text].url) {
                         _dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
                     } else {
@@ -243,10 +244,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     }
                     _dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
                     chrome.runtime.sendMessage(_dic);
-                    event.preventDefault();
                 } else if (superDrag.superDrag.text_type[position_text] === 1 && !isTextArea(event.target)) {
-                    copyAny(keyword)
                     event.preventDefault();
+                    copyAny(keyword)
                 }
             }
         }

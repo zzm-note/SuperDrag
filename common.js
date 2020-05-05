@@ -3,13 +3,13 @@ function _getDefault() {
 		enableAlt : true,
 		timeout : 1000,
 		effect_text : 0,
-		open_type : [1, 1, 1, 0],
+		open_type : [1, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
-		searchEngines : [11, 6, 19, 6],
+		searchEngines : [19, 11, 6, 6],
 		effect_link : 0,
-		open_type_link : [0, 1, 1, 0],
-		link_type : [1, 0, 3, 0],
-		linkSearchEngines : [0, 0, 6, 0],
+		open_type_link : [0, 1, 0, 1],
+		link_type : [1, 3, 0, 0],
+		linkSearchEngines : [0, 6, 0, 0],
 		linkTextSelect : false
 	};
 }
