@@ -93,14 +93,39 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     // }
 
     function copyAny(word) {
-        navigator.clipboard.writeText(word)
-            .then(() => {
-                console.log('Text copied to clipboard');
-            })
-            .catch(err => {
-                // This can happen if the user denies clipboard permissions:
-                console.error('Could not copy text: ', err);
-            });
+        // navigator.clipboard.writeText(word)
+        //     .then(() => {
+        //         console.log('Text copied to clipboard');
+        //     })
+        //     .catch(err => {
+        //         // This can happen if the user denies clipboard permissions:
+        //         console.error('Could not copy text: ', err);
+        //     });
+        if (typeof(navigator.clipboard)=='undefined') {
+            console.log('navigator.clipboard');
+            var textArea = document.createElement("textarea");
+            textArea.value = word;
+            textArea.style.position="fixed";  //avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+        
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log(msg); 
+            } catch (err) {
+                console.warn('Was not possible to copy te text: ', err);
+            }
+        
+            document.body.removeChild(textArea)            
+            return;
+        }
+        navigator.clipboard.writeText(word).then(function() {
+            console.log(`successful!`);         
+        }, function(err) {
+            console.warn('unsuccessful!', err);
+        });
     }
 
     const isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
