@@ -92,7 +92,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     //     }, false);
     // }
 
-    function copyAny(word) {
+    // 复制文本
+    function copyText(word) {
         // navigator.clipboard.writeText(word)
         //     .then(() => {
         //         console.log('Text copied to clipboard');
@@ -128,6 +129,22 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         });
     }
 
+    // 复制图片
+    async function copyImage(url) {
+        try {
+            const data = await fetch(url);
+            const blob = await data.blob();
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                [blob.type]: blob
+              })
+            ]);
+            console.log('Image copied.');
+          } catch(err) {
+            console.error(err.name, err.message);
+          }
+    }
+
     const isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
     const _dic = {};
     const isTextArea = element => element.matches(
@@ -157,6 +174,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             let items;
             let position_text;
             let position_link;
+            let position_img;
             _dic.endX = event.x;
             _dic.endY = event.y;
             let moveX = _dic.endX - _dic.startX;
@@ -207,46 +225,164 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     position_link = 3;
                 }
             }
+            if (superDrag.superDrag.effect_img === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_img = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_img = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_img = 2;
+                } else {
+                    position_img = 3;
+                }
+            } else if (superDrag.superDrag.effect_img === 1) {
+                if (moveY < 0) {
+                    position_img = 0;
+                } else {
+                    position_img = 1;
+                }
+            } else if (superDrag.superDrag.effect_img === 2) {
+                if (moveX < 0) {
+                    position_img = 2;
+                } else {
+                    position_img = 3;
+                }
+            }
             let keyword = event.dataTransfer.getData('text/plain');
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+
             if (event.dataTransfer.types.includes('text/uri-list')) {
-                if (superDrag.superDrag.link_type[position_link] === 0) {
-                    event.preventDefault();
-                    _dic['url'] = keyword
-                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                    chrome.runtime.sendMessage(_dic);
-                } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                    event.preventDefault();
-                    copyAny(keyword);
-                } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                    event.preventDefault();
-                    items = event.dataTransfer.getData('text/html');
-                    let domparser = new DOMParser();
-                    let doc = domparser.parseFromString(items, 'text/html');
-                    if (doc.links.length) {
-                        copyAny(doc.links[0].text);
-                    } else if (doc.images.length) {
-                        copyAny(doc.images[0].src);
+                items = event.dataTransfer.getData('text/html');
+                let domparser = new DOMParser();
+                let doc = domparser.parseFromString(items, 'text/html');
+
+                // console.log(doc.links);
+                // console.log(doc.images);
+                
+                if (doc.links.length && doc.images.length) { //如果链接包含图片
+                    if (superDrag.superDrag.firstEvent) {
+                        if (superDrag.superDrag.link_type[position_link] === 0) {
+                            event.preventDefault();
+                            _dic['url'] = keyword
+                            _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            _dic['flag'] = 'openTable';
+                            chrome.runtime.sendMessage(_dic);
+                        } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                            event.preventDefault();
+                            copyText(keyword);
+                        } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                            event.preventDefault();
+                            copyText(doc.links[0].text);
+                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                            event.preventDefault();
+                            keyword = doc.links[0].text;
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            _dic['flag'] = 'openTable';
+                            chrome.runtime.sendMessage(_dic);
+                        }
                     } else {
-                        copyAny(keyword);
+                        if (superDrag.superDrag.img_type[position_img] === 0) {
+                            event.preventDefault();
+                            _dic['url'] = keyword;
+                            _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            _dic['flag'] = 'openTable';
+                            chrome.runtime.sendMessage(_dic);
+                        } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                            event.preventDefault();
+                            _dic['url'] = doc.images[0].src;
+                            _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            _dic['flag'] = 'openTable';
+                            chrome.runtime.sendMessage(_dic);
+                        } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                            event.preventDefault();
+                            copyImage(doc.images[0].src);
+                        } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                            event.preventDefault();
+                            copyText(doc.images[0].src)
+                        } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                            event.preventDefault();
+                            _dic['url'] = doc.images[0].src;
+                            _dic['flag'] = 'download';
+                            chrome.runtime.sendMessage(_dic);
+                        } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                            event.preventDefault();
+                            keyword = doc.images[0].src;
+                            if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                _dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                _dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            _dic['flag'] = 'openTable';
+                            chrome.runtime.sendMessage(_dic);
+                        }
                     }
-                } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                    event.preventDefault();
-                    items = event.dataTransfer.getData('text/html');
-                    let domparser = new DOMParser();
-                    let doc = domparser.parseFromString(items, 'text/html');
-                    if (doc.links.length) {
+                } else if (doc.links.length) { //链接
+                    if (superDrag.superDrag.link_type[position_link] === 0) {
+                        event.preventDefault();
+                        _dic['url'] = keyword
+                        _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                        event.preventDefault();
+                        copyText(keyword);
+                    } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                        event.preventDefault();
+                        copyText(doc.links[0].text);
+                    } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                        event.preventDefault();
                         keyword = doc.links[0].text;
-                    } else if (doc.images.length) {
+                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                            _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    }
+                } else if (doc.images.length) {//图片
+                    if (superDrag.superDrag.img_type[position_img] === 0) {
+                        event.preventDefault();
+                        _dic['url'] = keyword;
+                        _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                        event.preventDefault();
+                        _dic['url'] = doc.images[0].src;
+                        _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                        event.preventDefault();
+                        copyImage(doc.images[0].src);
+                    } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                        event.preventDefault();
+                        copyText(doc.images[0].src)
+                    } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                        event.preventDefault();
+                        _dic['url'] = doc.images[0].src;
+                        _dic['flag'] = 'download';
+                        chrome.runtime.sendMessage(_dic);
+                    } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                        event.preventDefault();
                         keyword = doc.images[0].src;
+                        if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                            _dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            _dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
                     }
-                    if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                        _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                    } else {
-                        _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                    }
-                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                    chrome.runtime.sendMessage(_dic);
                 }
             } else if (urlPattern.test(keyword)) {
                 if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
@@ -257,7 +393,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     chrome.runtime.sendMessage(_dic);
                 } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
                     event.preventDefault();
-                    copyAny(keyword);
+                    copyText(keyword);
                 }
             } else if (event.dataTransfer.types.includes('text/plain')) {
                 if (superDrag.superDrag.text_type[position_text] === 0 && !isTextArea(event.target)) {
@@ -271,7 +407,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     chrome.runtime.sendMessage(_dic);
                 } else if (superDrag.superDrag.text_type[position_text] === 1 && !isTextArea(event.target)) {
                     event.preventDefault();
-                    copyAny(keyword)
+                    copyText(keyword)
                 }
             }
         }

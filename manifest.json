@@ -1,6 +1,6 @@
 {
 	"name" : "__MSG_name__",
-	"version" : "2.0.5",
+	"version" : "3.0.0",
 	"manifest_version" : 2,
 	"description" : "__MSG_desc__",
 	"icons" : {
@@ -19,6 +19,6 @@
 				"js" : ["common.js", "superdrag.js"],
 				"run_at" : "document_start"
 			}],
-	"permissions" : ["storage"],
+	"permissions" : ["storage", "downloads"],
 	"options_page" : "options.html"
 }

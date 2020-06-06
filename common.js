@@ -2,15 +2,23 @@ function _getDefault() {
 	return {
 		enableAlt : true,
 		timeout : 1000,
+		firstEvent: true,
+
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
 		searchEngines : [19, 11, 6, 6],
+
 		effect_link : 0,
 		open_type_link : [0, 1, 0, 1],
 		link_type : [1, 3, 0, 0],
 		linkSearchEngines : [0, 6, 0, 0],
-		linkTextSelect : false
+		linkTextSelect : false,
+
+		effect_img : 0,
+		open_type_img : [0, 1, 0, 1],
+		img_type : [1, 4, 0, 0],
+		imgSearchEngines : [1, 1, 1, 1]
 	};
 }
 
@@ -18,7 +26,9 @@ var _effect_text = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
 var _open_type = ["\u524D\u53F0", "\u540E\u53F0"];
 var _text_type = ["\u641C\u7D22", "\u590D\u5236"];
 var _effect_link = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
-var _link_type = ["\u6253\u5F00", "\u590D\u5236\u94FE\u63A5url", "\u590D\u5236\u94FE\u63A5\u6587\u672C", "\u641C\u7D22\u94FE\u63A5\u6587\u672C"];
+var _link_type = ["\u6253\u5F00\u94FE\u63A5", "\u590D\u5236\u94FE\u63A5", "\u590D\u5236\u94FE\u63A5\u6587\u672C", "\u641C\u7D22\u94FE\u63A5\u6587\u672C"];
+var _effect_img = ["\u4E0A\u4E0B\u5DE6\u53F3", "\u4E0A\u4E0B", "\u5DE6\u53F3"];
+var _img_type = ["\u6253\u5F00\u56FE\u7247\u6307\u5411\u7F51\u7AD9", "\u6253\u5F00\u56FE\u7247", "\u590D\u5236\u56FE\u7247", "\u590D\u5236\u56FE\u7247\u94FE\u63A5", "\u4E0B\u8F7D\u56FE\u7247", "\u4EE5\u56FE\u641C\u56FE"];
 
 var _build_in_seach_engines = [{
 			"name" : "\u300E\u7F51\u9875\u300FGoogle",
@@ -89,4 +99,15 @@ var _build_in_seach_engines = [{
 		}, {
 			"name" : "\u300E\u8D2D\u7269\u300F\u4EAC\u4E1C",
 			"url" : "http://search.jd.com/Search?keyword=%s&enc=utf-8"
+		}];
+
+var _build_in_seach_engines_for_img = [{
+			"name" : "Google",
+			"url" : "https://www.google.com/searchbyimage?image_url=%s"
+		}, {
+			"name" : "Baidu",
+			"url" : "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s"
+		}, {
+			"name" : "TinEye",
+			"url" : "https://www.tineye.com/search?url=%s"
 		}];

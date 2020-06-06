@@ -11,6 +11,9 @@
 	"fieldlink0" : {
 		"message" : "链接类型"
 	},
+	"fieldimg0" : {
+		"message" : "图片类型"
+	},
 	"custom_search" : {
 		"message" : "『自定义』..."
 	},
@@ -18,9 +21,6 @@
 		"message" : "水平拖动用以选择链接文本"
 	},
 	"searchUrlDescription" : {
-		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
-	},
-	"linkSearchUrlDescription" : {
 		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
 	},
 	"common" : {
@@ -34,5 +34,8 @@
 	},
 	"timeout_des2" : {
 		"message" : "\uD83D\uDC49输入0则不会自动取消"
+	},
+	"firstEventDesc" : {
+		"message" : "如果链接包含图片，优先处理链接类型；不选中则为图片类型"
 	}
 }
