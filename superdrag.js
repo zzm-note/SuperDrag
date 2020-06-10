@@ -390,6 +390,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     keyword = "https://" + keyword;
                     _dic['url'] = keyword;
                     _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    _dic['flag'] = 'openTable';
                     chrome.runtime.sendMessage(_dic);
                 } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
                     event.preventDefault();
@@ -404,6 +405,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         _dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
                     }
                     _dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                    _dic['flag'] = 'openTable';
                     chrome.runtime.sendMessage(_dic);
                 } else if (superDrag.superDrag.text_type[position_text] === 1 && !isTextArea(event.target)) {
                     event.preventDefault();
