@@ -350,7 +350,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 } else if (doc.images.length) {//图片
                     if (superDrag.superDrag.img_type[position_img] === 0) {
                         event.preventDefault();
-                        _dic['url'] = keyword;
+                        _dic['url'] = event.dataTransfer.getData('text/uri-list');
                         _dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                         _dic['flag'] = 'openTable';
                         chrome.runtime.sendMessage(_dic);

@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.0.1
+1.修复打开图片指向网站错误
+
 v3.0.0
 1.新增“图片类型”拖拽功能
 2.修复http网站不能复制的问题
