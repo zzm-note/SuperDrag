@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.0.2
+1.修复某些类型的文本链接拖拽失效
+
 v3.0.1
 1.修复打开图片指向网站错误
 

@@ -248,7 +248,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     position_img = 3;
                 }
             }
-            let keyword = event.dataTransfer.getData('text/plain');
+            let keyword = event.dataTransfer.getData('text/plain').trim();
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
             if (event.dataTransfer.types.includes('text/uri-list')) {
@@ -384,6 +384,28 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         chrome.runtime.sendMessage(_dic);
                     }
                 }
+                else {
+                    if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
+                        event.preventDefault();
+                        _dic['url'] = keyword;
+                        _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
+                        event.preventDefault();
+                        copyText(keyword);
+                    } else if (superDrag.superDrag.link_type[position_link] === 3 && !isTextArea(event.target)) {
+                        event.preventDefault();
+                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                            _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        _dic['flag'] = 'openTable';
+                        chrome.runtime.sendMessage(_dic);
+                    }
+                }
             } else if (urlPattern.test(keyword)) {
                 if (superDrag.superDrag.link_type[position_link] === 0 && !isTextArea(event.target)) {
                     event.preventDefault();
@@ -395,6 +417,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !isTextArea(event.target)) {
                     event.preventDefault();
                     copyText(keyword);
+                } else if (superDrag.superDrag.link_type[position_link] === 3 && !isTextArea(event.target)) {
+                    event.preventDefault();
+                    if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                        _dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        _dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    _dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    _dic['flag'] = 'openTable';
+                    chrome.runtime.sendMessage(_dic);
                 }
             } else if (event.dataTransfer.types.includes('text/plain')) {
                 if (superDrag.superDrag.text_type[position_text] === 0 && !isTextArea(event.target)) {
