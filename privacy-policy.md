@@ -1,1 +1,1 @@
-SuperDrag does not collect any personal information.
+SuperDrag does **not** collect any personal information.
