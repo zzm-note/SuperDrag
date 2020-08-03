@@ -92,6 +92,23 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     //     }, false);
     // }
 
+    // toast提示信息
+    function toast(msg, duration) {
+        duration = isNaN(duration) ? 3000 : duration;
+        var m = document.createElement('div');
+        m.innerHTML = msg;
+        m.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
+        document.body.appendChild(m);
+        setTimeout(function() {
+            var d = 0.5;
+            m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in';
+            m.style.opacity = '0';
+            setTimeout(function() {
+            document.body.removeChild(m)
+            }, d * 1000);
+        }, duration);
+    }
+
     // 复制文本
     function copyText(word) {
         // navigator.clipboard.writeText(word)
@@ -308,7 +325,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                             event.preventDefault();
                             _dic['url'] = doc.images[0].src;
                             _dic['flag'] = 'download';
-                            chrome.runtime.sendMessage(_dic);
+                            try {
+                                chrome.runtime.sendMessage(_dic);
+                                toast("下载图片，处理中……");
+                              } catch(err) {
+                                toast("下载图片失败！");
+                              }
                         } else if (superDrag.superDrag.img_type[position_img] === 5) {
                             event.preventDefault();
                             keyword = doc.images[0].src;
@@ -370,7 +392,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         event.preventDefault();
                         _dic['url'] = doc.images[0].src;
                         _dic['flag'] = 'download';
-                        chrome.runtime.sendMessage(_dic);
+                        try {
+                            chrome.runtime.sendMessage(_dic);
+                            toast("下载图片，处理中……");
+                          } catch(err) {
+                            toast("下载图片失败！");
+                          }
                     } else if (superDrag.superDrag.img_type[position_img] === 5) {
                         event.preventDefault();
                         keyword = doc.images[0].src;

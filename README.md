@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.0.3
+1.下载图片增加toast提示，优化下载大图体验
+
 v3.0.2
 1.修复某些类型的文本链接拖拽失效
 
