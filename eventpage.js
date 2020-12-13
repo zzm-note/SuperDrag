@@ -7,6 +7,7 @@ chrome.runtime.onMessage.addListener(message => {
   } else if (message['flag'] == 'download') {
     chrome.downloads.download({
       url: message['url'],
+      saveAs: message['saveAs']
     },function(downloadId) {
         console.log(downloadId);
     });

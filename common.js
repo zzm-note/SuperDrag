@@ -3,6 +3,7 @@ function _getDefault() {
 		enableAlt : true,
 		timeout : 1000,
 		firstEvent: true,
+		saveAs: true,
 
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],

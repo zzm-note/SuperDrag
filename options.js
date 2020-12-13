@@ -103,6 +103,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             _save(superDrag.superDrag);
             console.log(superDrag);
         }, false);
+    document.getElementById("saveAs").addEventListener(
+        "change", function () {
+            superDrag.superDrag.saveAs = this.checked;
+            _save(superDrag.superDrag);
+            console.log(superDrag);
+        }, false);
     document.getElementById("timeout").addEventListener(
         "change", function () {
             if(isNaN(this.value) || this.value.length === 0) {
@@ -135,6 +141,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('timeout_des').innerHTML = chrome.i18n.getMessage('timeout_des');
     document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
     document.getElementById('firstEventDesc').innerHTML = chrome.i18n.getMessage('firstEventDesc');
+    document.getElementById('saveAsDesc').innerHTML = chrome.i18n.getMessage('saveAsDesc');
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
@@ -145,6 +152,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("enable_link_text_select").checked = superDrag.superDrag.linkTextSelect;
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
+    document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;

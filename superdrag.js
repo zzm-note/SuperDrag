@@ -392,6 +392,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                         event.preventDefault();
                         _dic['url'] = doc.images[0].src;
                         _dic['flag'] = 'download';
+                        _dic['saveAs'] = superDrag.superDrag.saveAs;
                         try {
                             chrome.runtime.sendMessage(_dic);
                             toast("下载图片，处理中……");

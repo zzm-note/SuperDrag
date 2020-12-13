@@ -37,5 +37,8 @@
 	},
 	"firstEventDesc" : {
 		"message" : "如果链接包含图片，优先处理链接类型；不选中则为图片类型"
+	},
+	"saveAsDesc" : {
+		"message" : "下载图片弹出文件另存为对话框"
 	}
 }
