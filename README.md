@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.0.5
+更换图标
+
 v3.0.4
 1.下载图片增加可选另存为对话框
 
