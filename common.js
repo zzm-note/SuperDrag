@@ -3,12 +3,13 @@ function _getDefault() {
 		enableAlt : true,
 		timeout : 1000,
 		firstEvent: true,
-		saveAs: true,
+		saveAs: false,
+		openLinksOpenType: 1,
 
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
-		searchEngines : [19, 11, 1, 1],
+		searchEngines : [19, 11, 6, 6],
 
 		effect_link : 0,
 		open_type_link : [0, 1, 0, 1],

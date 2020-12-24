@@ -32,6 +32,10 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 _save_open_type_img(this, superDrag);
             }, false);
     }
+    document.getElementById("openLinks").addEventListener(
+        "change", function () {
+            _save_open_type_open_links(this, superDrag);
+        }, false);
     for (i = 0; i < 4; i++) {
         document.getElementById("text_type_" + i).addEventListener(
             "change", function () {
@@ -142,6 +146,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
     document.getElementById('firstEventDesc').innerHTML = chrome.i18n.getMessage('firstEventDesc');
     document.getElementById('saveAsDesc').innerHTML = chrome.i18n.getMessage('saveAsDesc');
+    document.getElementById('openLinksDesc').innerHTML = chrome.i18n.getMessage('openLinksDesc');
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
@@ -169,6 +174,10 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _s = _init_open_type_img(i);
         _s.selectedIndex = types[i];
     }
+
+    _open_links_select = _init_open_type_open_links()
+    _open_links_select.selectedIndex = superDrag.superDrag.openLinksOpenType;
+
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.text_type;
         _s = _init_text_type(i);
@@ -400,6 +409,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_open_type_open_links() {
+        const _select = document.getElementById("openLinks");
+        if (!_select.options.length) {
+            for (let i = 0; i < _open_type.length; i++) {
+                _select.add(new Option(_open_type[i], i, false));
+            }
+        }
+        return _select;
+    }
+
     function _init_text_type(_id) {
         const _select = document.getElementById("text_type_" + _id);
         if (!_select.options.length) {
@@ -505,6 +524,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         const _id = _select.getAttribute("myAttr");
         const _v = _select.options[_select.selectedIndex].value;
         superDrag.superDrag.open_type_img[_id] = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
+    function _save_open_type_open_links(_select, superDrag) {// select
+        const _v = _select.options[_select.selectedIndex].value;
+        superDrag.superDrag.openLinksOpenType = Number(_v);
         _save(superDrag.superDrag)
     }
 

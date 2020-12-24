@@ -40,5 +40,8 @@
 	},
 	"saveAsDesc" : {
 		"message" : "下载图片弹出文件另存为对话框"
+	},
+	"openLinksDesc" : {
+		"message" : "框选打开多个链接的方式"
 	}
 }

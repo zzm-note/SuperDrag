@@ -2,6 +2,10 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.1.0
+1. 新增框选打开多个链接功能
+2. 下载图片默认不显示另存为对话框
+
 v3.0.5
 更换图标
 

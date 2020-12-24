@@ -95,13 +95,13 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         new SuperDrag(event, superDrag);
     }, false)
     document.addEventListener('mousedown', event => {
-        if (event.shiftKey){
+        if (event.shiftKey) {
             new OpenLinks(event, superDrag);
         }
     }, false);
 })
 
-class SuperDrag{
+class SuperDrag {
     constructor(event, superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
@@ -111,6 +111,7 @@ class SuperDrag{
 
         this.drag(event, superDrag);
     }
+
     // toast提示信息
     toast(msg, duration) {
         duration = isNaN(duration) ? 3000 : duration;
@@ -118,11 +119,11 @@ class SuperDrag{
         m.innerHTML = msg;
         m.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
         document.body.appendChild(m);
-        setTimeout(function() {
+        setTimeout(function () {
             var d = 0.5;
             m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in';
             m.style.opacity = '0';
-            setTimeout(function() {
+            setTimeout(function () {
                 document.body.removeChild(m)
             }, d * 1000);
         }, duration);
@@ -138,11 +139,11 @@ class SuperDrag{
         //         // This can happen if the user denies clipboard permissions:
         //         console.error('Could not copy text: ', err);
         //     });
-        if (typeof(navigator.clipboard)=='undefined') {
+        if (typeof (navigator.clipboard) == 'undefined') {
             console.log('navigator.clipboard');
             var textArea = document.createElement("textarea");
             textArea.value = word;
-            textArea.style.position="fixed";  //avoid scrolling to bottom
+            textArea.style.position = "fixed";  //avoid scrolling to bottom
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
@@ -158,9 +159,9 @@ class SuperDrag{
             document.body.removeChild(textArea)
             return;
         }
-        navigator.clipboard.writeText(word).then(function() {
+        navigator.clipboard.writeText(word).then(function () {
             console.log(`successful!`);
-        }, function(err) {
+        }, function (err) {
             console.warn('unsuccessful!', err);
         });
     }
@@ -176,12 +177,12 @@ class SuperDrag{
                 })
             ]);
             console.log('Image copied.');
-        } catch(err) {
+        } catch (err) {
             console.error(err.name, err.message);
         }
     }
 
-    drag(event, superDrag){
+    drag(event, superDrag) {
         let time_collect = 0;
 
         this._dic.start_time = new Date().getTime();
@@ -202,7 +203,7 @@ class SuperDrag{
             this._dic.stop_time = new Date().getTime();
             time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
             if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
-                && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))){
+                && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
                 let items;
                 let position_text;
                 let position_link;
@@ -342,9 +343,9 @@ class SuperDrag{
                                 this._dic['flag'] = 'download';
                                 try {
                                     chrome.extension.sendMessage(this._dic);
-                                    toast("下载图片，处理中……");
-                                } catch(err) {
-                                    toast("下载图片失败！");
+                                    this.toast("下载图片，处理中……");
+                                } catch (err) {
+                                    this.toast("下载图片失败！");
                                 }
                             } else if (superDrag.superDrag.img_type[position_img] === 5) {
                                 event.preventDefault();
@@ -410,9 +411,9 @@ class SuperDrag{
                             this._dic['saveAs'] = superDrag.superDrag.saveAs;
                             try {
                                 chrome.extension.sendMessage(this._dic);
-                                toast("下载图片，处理中……");
-                            } catch(err) {
-                                toast("下载图片失败！");
+                                this.toast("下载图片，处理中……");
+                            } catch (err) {
+                                this.toast("下载图片失败！");
                             }
                         } else if (superDrag.superDrag.img_type[position_img] === 5) {
                             event.preventDefault();
@@ -426,8 +427,7 @@ class SuperDrag{
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
                         }
-                    }
-                    else {
+                    } else {
                         if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
                             event.preventDefault();
                             this._dic['url'] = keyword;
@@ -500,22 +500,25 @@ class SuperDrag{
     }
 }
 
+// Reference from linkclump: https://github.com/benblack86/linkclump/blob/master/src/linkclump.js
 class OpenLinks {
     constructor(event, superDrag) {
+        this.setting = superDrag;
         this.mouseOn = false;
         this.startX = 0;
         this.startY = 0;
 
-        this.links = document.links;
-        this.box_local = {};
+        this.page_links = document.links;
+        this.links = this.links_handle();
+        this.open_links = [];
 
         this.clearEventBubble(event);
         if (event.buttons === 1 && event.shiftKey) {
+            // 创建选框
             this.box = document.createElement("span");
             this.box.style.margin = "0px auto";
-            this.box.style.border = "2px dotted #00FF00";
+            this.box.style.border = "2px dashed #516F9C";
             this.box.style.position = "absolute";
-            this.box.style.zIndex = 2147483647;
             this.box.style.visibility = "visible";
             this.box.x = event.pageX;
             this.box.y = event.pageY;
@@ -524,56 +527,187 @@ class OpenLinks {
 
             this.mouseOn = true
 
-            this.update_box(event.pageX, event.pageY, true)
+            this.update_box(event.pageX, event.pageY)
 
             document.addEventListener('mousemove', ev => this.mousemove(ev), false);
             document.addEventListener('mouseup', ev => this.mouseup(ev), false);
         }
     }
 
-    update_box(x, y, first) {
-        if (first) {
-            this.box.style.left = x + "px";
-            this.box.style.width = "0px";
-            this.box.style.top = y + "px";
-            this.box.style.height = "0px";
+    update_box(x, y) {
+        var width = Math.max(document.documentElement["clientWidth"], document.body["scrollWidth"], document.documentElement["scrollWidth"], document.body["offsetWidth"], document.documentElement["offsetWidth"]); // taken from jquery
+        var height = Math.max(document.documentElement["clientHeight"], document.body["scrollHeight"], document.documentElement["scrollHeight"], document.body["offsetHeight"], document.documentElement["offsetHeight"]); // taken from jquery
+        x = Math.min(x, width - 7);
+        y = Math.min(y, height - 7);
+
+        if (x > this.box.x) {
+            this.box.x1 = this.box.x;
+            this.box.x2 = x;
         } else {
-            const width = Math.abs(x - this.box.style.left.substr(0, this.box.style.left.length-2))
-            const height = Math.abs(y - this.box.style.top.substr(0, this.box.style.top.length-2))
-            this.box.style.width = width + "px";
-            this.box.style.height = height + "px";
+            this.box.x1 = x;
+            this.box.x2 = this.box.x;
         }
+        if (y > this.box.y) {
+            this.box.y1 = this.box.y;
+            this.box.y2 = y;
+        } else {
+            this.box.y1 = y;
+            this.box.y2 = this.box.y;
+        }
+
+        this.box.style.left = this.box.x1 + "px";
+        this.box.style.width = this.box.x2 - this.box.x1 + "px";
+        this.box.style.top = this.box.y1 + "px";
+        this.box.style.height = this.box.y2 - this.box.y1 + "px";
     }
 
     mousemove(e) {
         if (!this.mouseOn || !e.shiftKey) return;
         this.clearEventBubble(e);
-        this.update_box(e.pageX, e.pageY, false);
+        this.update_box(e.pageX, e.pageY);
+        this.highlight_link();
     }
 
     mouseup(e) {
+        var _dic = {}
         if (!this.mouseOn || !e.shiftKey) return;
-        this.update_box(e.pageX, e.pageY, false);
-        this.box.style.visibility = "hidden";
+        this.update_box(e.pageX, e.pageY);
+        if (this.box != null) {
+            this.box.parentNode.removeChild(this.box);
+        }
         this.mouseOn = false;
+
+        _dic['url'] = this.open_links;
+        _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
+        _dic['flag'] = 'openTable';
+        chrome.extension.sendMessage(_dic);
+
+        this.highlight_link();
         this.clear_up();
         this.clearEventBubble(e);
-        // 打印被选中DOM元素
-        console.log(e.pageX)
-        console.log(e.pageY)
-        console.log(this.box.style.left);
-        console.log(this.box.style.top);
-        console.log(this.box.style.width);
-        console.log(this.box.style.height);
-        this.box_local = {x: this.box.style.left, y: this.box.style.top, L: this.box.style.width, H: this.box.style.height}
-        debugger
+        // 打印链接
     }
 
-    links_handle(e) {
+    links_handle = function () {
+        var links = [];
+        // create RegExp once
+        var re1 = new RegExp("^javascript:", "i");
+        var re2 = new RegExp("^H\\d$");
 
+        for (var i = 0; i < this.page_links.length; i++) {
+            // reject javascript: links
+            if (re1.test(this.page_links[i].href)) {
+                continue;
+            }
+
+            // reject href="" or href="#"
+            if (!this.page_links[i].getAttribute("href") || this.page_links[i].getAttribute("href") === "#") {
+                continue;
+            }
+
+            // attempt to ignore invisible links (can't ignore overflow)
+            var comp = window.getComputedStyle(this.page_links[i], null);
+            if (comp.visibility == "hidden" || comp.display == "none") {
+                continue;
+            }
+
+            var pos = this.getXY(this.page_links[i]);
+            var width = this.page_links[i].offsetWidth;
+            var height = this.page_links[i].offsetHeight;
+
+            // attempt to get the actual size of the link
+            for (var k = 0; k < this.page_links[i].childNodes.length; k++) {
+                if (this.page_links[i].childNodes[k].nodeName == "IMG") {
+                    const pos2 = this.getXY(this.page_links[i].childNodes[k]);
+                    if (pos.y >= pos2.y) {
+                        pos.y = pos2.y;
+
+                        width = Math.max(width, this.page_links[i].childNodes[k].offsetWidth);
+                        height = Math.max(height, this.page_links[i].childNodes[k].offsetHeight);
+                    }
+                }
+            }
+
+            this.page_links[i].x1 = pos.x;
+            this.page_links[i].y1 = pos.y;
+            this.page_links[i].x2 = pos.x + width;
+            this.page_links[i].y2 = pos.y + height;
+            this.page_links[i].height = height;
+            this.page_links[i].width = width;
+            this.page_links[i].box = null;
+            this.page_links[i].important = this.page_links[i].parentNode != null && re2.test(this.page_links[i].parentNode.nodeName);
+
+            links.push(this.page_links[i]);
+        }
+        return links
     }
 
-    clearEventBubble = function(e) {
+    highlight_link = function () {
+        this.open_links = [];
+        for (var i = 0; i < this.links.length; i++) {
+            if (this.links[i].important && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
+                this.open_links.push({
+                    "url": this.links[i].href,
+                    "title": this.links[i].innerText
+                });
+
+                if (this.links[i].box === null) {
+                    var link_box = document.createElement("span");
+                    link_box.style.id = "linkclump-link";
+                    link_box.style.margin = "0px auto";
+                    link_box.style.border = "1px dashed #516F9C";
+                    link_box.style.position = "absolute";
+                    link_box.style.width = this.links[i].width + "px";
+                    link_box.style.height = this.links[i].height + "px";
+                    link_box.style.top = this.links[i].y1 + "px";
+                    link_box.style.left = this.links[i].x1 + "px";
+
+                    document.body.appendChild(link_box);
+                    this.links[i].box = link_box;
+                } else {
+                    this.links[i].box.style.visibility = "visible";
+                }
+            } else {
+                if (this.links[i].box !== null) {
+                    this.links[i].box.style.visibility = "hidden";
+                }
+            }
+        }
+    }
+
+    getXY = function (element) {
+        var x = 0;
+        var y = 0;
+
+        var parent = element;
+        var style;
+        var matrix;
+        do {
+            style = window.getComputedStyle(parent);
+            matrix = new WebKitCSSMatrix(style.webkitTransform);
+            x += parent.offsetLeft + matrix.m41;
+            y += parent.offsetTop + matrix.m42;
+        } while (parent = parent.offsetParent);
+
+        parent = element;
+        while (parent && parent !== document.body) {
+            if (parent.scrollleft) {
+                x -= parent.scrollLeft;
+            }
+            if (parent.scrollTop) {
+                y -= parent.scrollTop;
+            }
+            parent = parent.parentNode;
+        }
+
+        return {
+            x: x,
+            y: y
+        };
+    }
+
+
+    clearEventBubble = function (e) {
         if (e.stopPropagation) e.stopPropagation();
         else e.cancelBubble = true;
 
@@ -584,5 +718,13 @@ class OpenLinks {
     clear_up = function () {
         document.removeEventListener('mousemove', OpenLinks.constructor, false);
         document.removeEventListener('mouseup', OpenLinks.constructor, false);
+
+        for (var i = 0; i < this.links.length; i++) {
+            if (this.links[i].box !== null) {
+                document.body.removeChild(this.links[i].box);
+                this.links[i].box = null;
+            }
+        }
+        this.open_links = [];
     }
 }
