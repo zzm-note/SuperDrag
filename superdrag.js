@@ -644,16 +644,22 @@ class OpenLinks {
 
     highlight_link = function () {
         this.open_links = [];
+        var smart_select = false;
         for (var i = 0; i < this.links.length; i++) {
-            if (this.links[i].important && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
+            if ((!smart_select || this.links[i].important) && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
                 this.open_links.push({
                     "url": this.links[i].href,
                     "title": this.links[i].innerText
                 });
 
+                if (!smart_select) {
+                    if (this.links[i].important) {
+                        smart_select = true;
+                    }
+                }
+
                 if (this.links[i].box === null) {
                     var link_box = document.createElement("span");
-                    link_box.style.id = "linkclump-link";
                     link_box.style.margin = "0px auto";
                     link_box.style.border = "1px dashed #516F9C";
                     link_box.style.position = "absolute";
