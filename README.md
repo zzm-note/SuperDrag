@@ -65,6 +65,7 @@ v2.0.3
 [uSuperDrag](https://github.com/iorate/uSuperDrag)  
 [Yet Another Drag and Go FIX](https://github.com/jerry74/yadng)  
 [闪耀拖拽](https://addons.mozilla.org/zh-CN/firefox/addon/glitterdrag/?src=search)
+[Linkclump](https://github.com/benblack86/linkclump)
 
 ### LICENSE：
 MIT
