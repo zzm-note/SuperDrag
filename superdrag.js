@@ -503,8 +503,6 @@ class OpenLinks {
     constructor(superDrag) {
         this.setting = superDrag;
         this.mouseOn = false;
-        this.startX = 0;
-        this.startY = 0;
         this.smart_select = false;
         document.addEventListener('mousedown', ev => this.mousedown(ev), false);
     }
@@ -550,7 +548,6 @@ class OpenLinks {
         if (this.box != null) {
             this.box.parentNode.removeChild(this.box);
         }
-        this.mouseOn = false;
 
         _dic['url'] = this.open_links;
         _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
@@ -679,6 +676,10 @@ class OpenLinks {
                 }
             }
         }
+
+        if (this.smart_select && this.open_links.length == 0) {
+            this.smart_select = false;
+        }
     }
 
     getXY(element) {
@@ -733,5 +734,7 @@ class OpenLinks {
             }
         }
         this.open_links = [];
+        this.mouseOn = false;
+        this.smart_select = false;
     }
 }
