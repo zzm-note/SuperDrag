@@ -91,25 +91,340 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     //         }
     //     }, false);
     // }
-    document.addEventListener('dragstart', event => {
-        new SuperDrag(event, superDrag);
-    }, false)
-    document.addEventListener('mousedown', event => {
-        if (event.shiftKey) {
-            new OpenLinks(event, superDrag);
-        }
-    }, false);
+    new SuperDrag(superDrag);
+    new OpenLinks(superDrag);
 })
 
 class SuperDrag {
-    constructor(event, superDrag) {
+    constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
         this.isTextArea = element => element.matches(
             'input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], textarea'
         ) && !element.disabled;
 
-        this.drag(event, superDrag);
+        document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag),false);
+    }
+
+    dragstart(event, superDrag) {
+        this._dic.start_time = new Date().getTime();
+        this._dic.startX = event.x;
+        this._dic.startY = event.y;
+
+        document.addEventListener('dragover', this.dragover, false);
+        document.addEventListener('drop', ev => this.drop(ev, superDrag), false);
+    }
+
+    dragover(event) {
+        if (event.dataTransfer.types.includes('text/uri-list')) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'link';
+        } else if (event.dataTransfer.types.includes('text/plain')) {
+            if (!this.isTextArea(event.target)) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'link';
+            }
+        }
+    }
+
+    drop(event, superDrag) {
+        let time_collect;
+        this._dic.stop_time = new Date().getTime();
+        time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
+        if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
+            && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
+            let items;
+            let position_text;
+            let position_link;
+            let position_img;
+            this._dic.endX = event.x;
+            this._dic.endY = event.y;
+            let moveX = this._dic.endX - this._dic.startX;
+            let moveY = this._dic.endY - this._dic.startY;
+            if (superDrag.superDrag.effect_text === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_text = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_text = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_text = 2;
+                } else {
+                    position_text = 3;
+                }
+            } else if (superDrag.superDrag.effect_text === 1) {
+                if (moveY < 0) {
+                    position_text = 0;
+                } else {
+                    position_text = 1;
+                }
+            } else if (superDrag.superDrag.effect_text === 2) {
+                if (moveX < 0) {
+                    position_text = 2;
+                } else {
+                    position_text = 3;
+                }
+            }
+            if (superDrag.superDrag.effect_link === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_link = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_link = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_link = 2;
+                } else {
+                    position_link = 3;
+                }
+            } else if (superDrag.superDrag.effect_link === 1) {
+                if (moveY < 0) {
+                    position_link = 0;
+                } else {
+                    position_link = 1;
+                }
+            } else if (superDrag.superDrag.effect_link === 2) {
+                if (moveX < 0) {
+                    position_link = 2;
+                } else {
+                    position_link = 3;
+                }
+            }
+            if (superDrag.superDrag.effect_img === 0) {
+                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                    position_img = 0;
+                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                    position_img = 1;
+                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
+                    position_img = 2;
+                } else {
+                    position_img = 3;
+                }
+            } else if (superDrag.superDrag.effect_img === 1) {
+                if (moveY < 0) {
+                    position_img = 0;
+                } else {
+                    position_img = 1;
+                }
+            } else if (superDrag.superDrag.effect_img === 2) {
+                if (moveX < 0) {
+                    position_img = 2;
+                } else {
+                    position_img = 3;
+                }
+            }
+            let keyword = event.dataTransfer.getData('text/plain').trim();
+            let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+
+            if (event.dataTransfer.types.includes('text/uri-list')) {
+                items = event.dataTransfer.getData('text/html');
+                let domparser = new DOMParser();
+                let doc = domparser.parseFromString(items, 'text/html');
+
+                // console.log(doc.links);
+                // console.log(doc.images);
+
+                if (doc.links.length && doc.images.length) { //如果链接包含图片
+                    if (superDrag.superDrag.firstEvent) {
+                        if (superDrag.superDrag.link_type[position_link] === 0) {
+                            event.preventDefault();
+                            this._dic['url'] = keyword
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            chrome.extension.sendMessage(this._dic);
+                        } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                            event.preventDefault();
+                            this.copyText(keyword);
+                        } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                            event.preventDefault();
+                            this.copyText(doc.links[0].text);
+                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                            event.preventDefault();
+                            keyword = doc.links[0].text;
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            chrome.extension.sendMessage(this._dic);
+                        }
+                    } else {
+                        if (superDrag.superDrag.img_type[position_img] === 0) {
+                            event.preventDefault();
+                            this._dic['url'] = event.dataTransfer.getData('text/uri-list');
+                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            this._dic['flag'] = 'openTable';
+                            chrome.extension.sendMessage(this._dic);
+                        } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                            event.preventDefault();
+                            this._dic['url'] = doc.images[0].src;
+                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            this._dic['flag'] = 'openTable';
+                            chrome.extension.sendMessage(this._dic);
+                        } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                            event.preventDefault();
+                            this.copyImage(doc.images[0].src);
+                        } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                            event.preventDefault();
+                            this.copyText(doc.images[0].src)
+                        } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                            event.preventDefault();
+                            this._dic['url'] = doc.images[0].src;
+                            this._dic['flag'] = 'download';
+                            try {
+                                chrome.extension.sendMessage(this._dic);
+                                this.toast("下载图片，处理中……");
+                            } catch (err) {
+                                this.toast("下载图片失败！");
+                            }
+                        } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                            event.preventDefault();
+                            keyword = doc.images[0].src;
+                            if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                            this._dic['flag'] = 'openTable';
+                            chrome.extension.sendMessage(this._dic);
+                        }
+                    }
+                } else if (doc.links.length) { //链接
+                    if (superDrag.superDrag.link_type[position_link] === 0) {
+                        event.preventDefault();
+                        this._dic['url'] = keyword
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                        event.preventDefault();
+                        this.copyText(keyword);
+                    } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                        event.preventDefault();
+                        this.copyText(doc.links[0].text);
+                    } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                        event.preventDefault();
+                        keyword = doc.links[0].text;
+                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    }
+                } else if (doc.images.length) {//图片
+                    if (superDrag.superDrag.img_type[position_img] === 0) {
+                        event.preventDefault();
+                        this._dic['url'] = event.dataTransfer.getData('text/uri-list');
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                        event.preventDefault();
+                        this._dic['url'] = doc.images[0].src;
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                        event.preventDefault();
+                        this.copyImage(doc.images[0].src);
+                    } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                        event.preventDefault();
+                        this.copyText(doc.images[0].src)
+                    } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                        event.preventDefault();
+                        this._dic['url'] = doc.images[0].src;
+                        this._dic['flag'] = 'download';
+                        this._dic['saveAs'] = superDrag.superDrag.saveAs;
+                        try {
+                            chrome.extension.sendMessage(this._dic);
+                            this.toast("下载图片，处理中……");
+                        } catch (err) {
+                            this.toast("下载图片失败！");
+                        }
+                    } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                        event.preventDefault();
+                        keyword = doc.images[0].src;
+                        if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                            this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    }
+                } else {
+                    if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
+                        event.preventDefault();
+                        this._dic['url'] = keyword;
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
+                        event.preventDefault();
+                        this.copyText(keyword);
+                    } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
+                        event.preventDefault();
+                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    }
+                }
+            } else if (urlPattern.test(keyword)) {
+                if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
+                    event.preventDefault();
+                    keyword = "https://" + keyword;
+                    this._dic['url'] = keyword;
+                    this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic['flag'] = 'openTable';
+                    chrome.extension.sendMessage(this._dic);
+                } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
+                    event.preventDefault();
+                    this.copyText(keyword);
+                } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
+                    event.preventDefault();
+                    if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                        this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic['flag'] = 'openTable';
+                    chrome.extension.sendMessage(this._dic);
+                }
+            } else if (event.dataTransfer.types.includes('text/plain')) {
+                if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea(event.target)) {
+                    event.preventDefault();
+                    if (superDrag.superDrag.searchEngines[position_text].url) {
+                        this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                        this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                    this._dic['flag'] = 'openTable';
+                    chrome.extension.sendMessage(this._dic);
+                } else if (superDrag.superDrag.text_type[position_text] === 1 && !this.isTextArea(event.target)) {
+                    event.preventDefault();
+                    this.copyText(keyword)
+                }
+            }
+        }
+        this.clear_up();
+    }
+
+    clear_up() {
+        this._dic = {};
+        document.removeEventListener('dragstart', this.constructor, false);
+        document.removeEventListener('dragover', this.dragstart, false);
+        document.removeEventListener('drop', this.dragstart, false);
     }
 
     // toast提示信息
@@ -129,7 +444,7 @@ class SuperDrag {
         }, duration);
     }
 
-// 复制文本
+    // 复制文本
     copyText(word) {
         // navigator.clipboard.writeText(word)
         //     .then(() => {
@@ -181,339 +496,26 @@ class SuperDrag {
             console.error(err.name, err.message);
         }
     }
-
-    drag(event, superDrag) {
-        let time_collect = 0;
-
-        this._dic.start_time = new Date().getTime();
-        this._dic.startX = event.x;
-        this._dic.startY = event.y;
-        document.addEventListener('dragover', event => {
-            if (event.dataTransfer.types.includes('text/uri-list')) {
-                event.preventDefault();
-                event.dataTransfer.dropEffect = 'link';
-            } else if (event.dataTransfer.types.includes('text/plain')) {
-                if (!this.isTextArea(event.target)) {
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = 'link';
-                }
-            }
-        }, false);
-        document.addEventListener('drop', event => {
-            this._dic.stop_time = new Date().getTime();
-            time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
-            if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
-                && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
-                let items;
-                let position_text;
-                let position_link;
-                let position_img;
-                this._dic.endX = event.x;
-                this._dic.endY = event.y;
-                let moveX = this._dic.endX - this._dic.startX;
-                let moveY = this._dic.endY - this._dic.startY;
-                if (superDrag.superDrag.effect_text === 0) {
-                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                        position_text = 0;
-                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                        position_text = 1;
-                    } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                        position_text = 2;
-                    } else {
-                        position_text = 3;
-                    }
-                } else if (superDrag.superDrag.effect_text === 1) {
-                    if (moveY < 0) {
-                        position_text = 0;
-                    } else {
-                        position_text = 1;
-                    }
-                } else if (superDrag.superDrag.effect_text === 2) {
-                    if (moveX < 0) {
-                        position_text = 2;
-                    } else {
-                        position_text = 3;
-                    }
-                }
-                if (superDrag.superDrag.effect_link === 0) {
-                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                        position_link = 0;
-                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                        position_link = 1;
-                    } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                        position_link = 2;
-                    } else {
-                        position_link = 3;
-                    }
-                } else if (superDrag.superDrag.effect_link === 1) {
-                    if (moveY < 0) {
-                        position_link = 0;
-                    } else {
-                        position_link = 1;
-                    }
-                } else if (superDrag.superDrag.effect_link === 2) {
-                    if (moveX < 0) {
-                        position_link = 2;
-                    } else {
-                        position_link = 3;
-                    }
-                }
-                if (superDrag.superDrag.effect_img === 0) {
-                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                        position_img = 0;
-                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                        position_img = 1;
-                    } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                        position_img = 2;
-                    } else {
-                        position_img = 3;
-                    }
-                } else if (superDrag.superDrag.effect_img === 1) {
-                    if (moveY < 0) {
-                        position_img = 0;
-                    } else {
-                        position_img = 1;
-                    }
-                } else if (superDrag.superDrag.effect_img === 2) {
-                    if (moveX < 0) {
-                        position_img = 2;
-                    } else {
-                        position_img = 3;
-                    }
-                }
-                let keyword = event.dataTransfer.getData('text/plain').trim();
-                let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-
-                if (event.dataTransfer.types.includes('text/uri-list')) {
-                    items = event.dataTransfer.getData('text/html');
-                    let domparser = new DOMParser();
-                    let doc = domparser.parseFromString(items, 'text/html');
-
-                    // console.log(doc.links);
-                    // console.log(doc.images);
-
-                    if (doc.links.length && doc.images.length) { //如果链接包含图片
-                        if (superDrag.superDrag.firstEvent) {
-                            if (superDrag.superDrag.link_type[position_link] === 0) {
-                                event.preventDefault();
-                                this._dic['url'] = keyword
-                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                                this._dic['flag'] = 'openTable';
-                                chrome.extension.sendMessage(this._dic);
-                            } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                                event.preventDefault();
-                                this.copyText(keyword);
-                            } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                                event.preventDefault();
-                                this.copyText(doc.links[0].text);
-                            } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                event.preventDefault();
-                                keyword = doc.links[0].text;
-                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                    this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                } else {
-                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                }
-                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                                this._dic['flag'] = 'openTable';
-                                chrome.extension.sendMessage(this._dic);
-                            }
-                        } else {
-                            if (superDrag.superDrag.img_type[position_img] === 0) {
-                                event.preventDefault();
-                                this._dic['url'] = event.dataTransfer.getData('text/uri-list');
-                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                                this._dic['flag'] = 'openTable';
-                                chrome.extension.sendMessage(this._dic);
-                            } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                                event.preventDefault();
-                                this._dic['url'] = doc.images[0].src;
-                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                                this._dic['flag'] = 'openTable';
-                                chrome.extension.sendMessage(this._dic);
-                            } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                                event.preventDefault();
-                                this.copyImage(doc.images[0].src);
-                            } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                                event.preventDefault();
-                                this.copyText(doc.images[0].src)
-                            } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                                event.preventDefault();
-                                this._dic['url'] = doc.images[0].src;
-                                this._dic['flag'] = 'download';
-                                try {
-                                    chrome.extension.sendMessage(this._dic);
-                                    this.toast("下载图片，处理中……");
-                                } catch (err) {
-                                    this.toast("下载图片失败！");
-                                }
-                            } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                                event.preventDefault();
-                                keyword = doc.images[0].src;
-                                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
-                                    this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                } else {
-                                    this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                }
-                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                                this._dic['flag'] = 'openTable';
-                                chrome.extension.sendMessage(this._dic);
-                            }
-                        }
-                    } else if (doc.links.length) { //链接
-                        if (superDrag.superDrag.link_type[position_link] === 0) {
-                            event.preventDefault();
-                            this._dic['url'] = keyword
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                            event.preventDefault();
-                            this.copyText(keyword);
-                        } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                            event.preventDefault();
-                            this.copyText(doc.links[0].text);
-                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                            event.preventDefault();
-                            keyword = doc.links[0].text;
-                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            } else {
-                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            }
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        }
-                    } else if (doc.images.length) {//图片
-                        if (superDrag.superDrag.img_type[position_img] === 0) {
-                            event.preventDefault();
-                            this._dic['url'] = event.dataTransfer.getData('text/uri-list');
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                            event.preventDefault();
-                            this._dic['url'] = doc.images[0].src;
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                            event.preventDefault();
-                            this.copyImage(doc.images[0].src);
-                        } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                            event.preventDefault();
-                            this.copyText(doc.images[0].src)
-                        } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                            event.preventDefault();
-                            this._dic['url'] = doc.images[0].src;
-                            this._dic['flag'] = 'download';
-                            this._dic['saveAs'] = superDrag.superDrag.saveAs;
-                            try {
-                                chrome.extension.sendMessage(this._dic);
-                                this.toast("下载图片，处理中……");
-                            } catch (err) {
-                                this.toast("下载图片失败！");
-                            }
-                        } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                            event.preventDefault();
-                            keyword = doc.images[0].src;
-                            if (superDrag.superDrag.imgSearchEngines[position_img].url) {
-                                this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            } else {
-                                this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            }
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        }
-                    } else {
-                        if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
-                            event.preventDefault();
-                            this._dic['url'] = keyword;
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
-                            event.preventDefault();
-                            this.copyText(keyword);
-                        } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
-                            event.preventDefault();
-                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            } else {
-                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            }
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        }
-                    }
-                } else if (urlPattern.test(keyword)) {
-                    if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        keyword = "https://" + keyword;
-                        this._dic['url'] = keyword;
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        this.copyText(keyword);
-                    } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        } else {
-                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        }
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    }
-                } else if (event.dataTransfer.types.includes('text/plain')) {
-                    if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        if (superDrag.superDrag.searchEngines[position_text].url) {
-                            this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        } else {
-                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        }
-                        this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if (superDrag.superDrag.text_type[position_text] === 1 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        this.copyText(keyword)
-                    }
-                }
-            }
-        }, false);
-        document.addEventListener('mouseup', this.clear_up, false);
-    }
-
-    clear_up() {
-        document.removeEventListener('dragstart', this, true);
-        document.removeEventListener('dragover', this.drag, false);
-        document.removeEventListener('drop', this.drag, false);
-        document.removeEventListener('mouseup', this.drag, false);
-    }
 }
 
 // Reference from linkclump: https://github.com/benblack86/linkclump/blob/master/src/linkclump.js
 class OpenLinks {
-    constructor(event, superDrag) {
+    constructor(superDrag) {
         this.setting = superDrag;
         this.mouseOn = false;
         this.startX = 0;
         this.startY = 0;
+        this.smart_select = false;
+        document.addEventListener('mousedown', ev => this.mousedown(ev), false);
+    }
 
-        this.page_links = document.links;
-        this.links = this.links_handle();
-        this.open_links = [];
-
-        this.clearEventBubble(event);
+    mousedown(event) {
         if (event.buttons === 1 && event.shiftKey) {
+            this.page_links = document.links;
+            this.links = this.links_handle();
+            this.open_links = [];
+
+            this.clearEventBubble(event);
             // 创建选框
             this.box = document.createElement("span");
             this.box.style.margin = "0px auto";
@@ -532,6 +534,32 @@ class OpenLinks {
             document.addEventListener('mousemove', ev => this.mousemove(ev), false);
             document.addEventListener('mouseup', ev => this.mouseup(ev), false);
         }
+    }
+
+    mousemove(e) {
+        if (!this.mouseOn || !e.shiftKey) return;
+        this.clearEventBubble(e);
+        this.update_box(e.pageX, e.pageY);
+        this.highlight_link();
+    }
+
+    mouseup(e) {
+        var _dic = {}
+        if (!this.mouseOn || !e.shiftKey) return;
+        this.update_box(e.pageX, e.pageY);
+        if (this.box != null) {
+            this.box.parentNode.removeChild(this.box);
+        }
+        this.mouseOn = false;
+
+        _dic['url'] = this.open_links;
+        _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
+        _dic['flag'] = 'openTable';
+        chrome.extension.sendMessage(_dic);
+
+        this.highlight_link();
+        this.clear_up();
+        this.clearEventBubble(e);
     }
 
     update_box(x, y) {
@@ -561,34 +589,7 @@ class OpenLinks {
         this.box.style.height = this.box.y2 - this.box.y1 + "px";
     }
 
-    mousemove(e) {
-        if (!this.mouseOn || !e.shiftKey) return;
-        this.clearEventBubble(e);
-        this.update_box(e.pageX, e.pageY);
-        this.highlight_link();
-    }
-
-    mouseup(e) {
-        var _dic = {}
-        if (!this.mouseOn || !e.shiftKey) return;
-        this.update_box(e.pageX, e.pageY);
-        if (this.box != null) {
-            this.box.parentNode.removeChild(this.box);
-        }
-        this.mouseOn = false;
-
-        _dic['url'] = this.open_links;
-        _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
-        _dic['flag'] = 'openTable';
-        chrome.extension.sendMessage(_dic);
-
-        this.highlight_link();
-        this.clear_up();
-        this.clearEventBubble(e);
-        // 打印链接
-    }
-
-    links_handle = function () {
+    links_handle() {
         var links = [];
         // create RegExp once
         var re1 = new RegExp("^javascript:", "i");
@@ -642,19 +643,18 @@ class OpenLinks {
         return links
     }
 
-    highlight_link = function () {
+    highlight_link() {
         this.open_links = [];
-        var smart_select = false;
         for (var i = 0; i < this.links.length; i++) {
-            if ((!smart_select || this.links[i].important) && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
+            if ((!this.smart_select || this.links[i].important) && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
                 this.open_links.push({
                     "url": this.links[i].href,
                     "title": this.links[i].innerText
                 });
 
-                if (!smart_select) {
+                if (!this.smart_select) {
                     if (this.links[i].important) {
-                        smart_select = true;
+                        this.smart_select = true;
                     }
                 }
 
@@ -681,7 +681,7 @@ class OpenLinks {
         }
     }
 
-    getXY = function (element) {
+    getXY(element) {
         var x = 0;
         var y = 0;
 
@@ -713,7 +713,7 @@ class OpenLinks {
     }
 
 
-    clearEventBubble = function (e) {
+    clearEventBubble(e) {
         if (e.stopPropagation) e.stopPropagation();
         else e.cancelBubble = true;
 
@@ -721,9 +721,10 @@ class OpenLinks {
         else e.returnValue = false;
     }
 
-    clear_up = function () {
-        document.removeEventListener('mousemove', OpenLinks.constructor, false);
-        document.removeEventListener('mouseup', OpenLinks.constructor, false);
+    clear_up() {
+        document.removeEventListener('mousedown', this.constructor, false);
+        document.removeEventListener('mousemove', this.mousedown, false);
+        document.removeEventListener('mouseup', this.mousedown, false);
 
         for (var i = 0; i < this.links.length; i++) {
             if (this.links[i].box !== null) {
