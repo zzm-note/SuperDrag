@@ -523,7 +523,16 @@ class OpenLinks {
             this.box.x = event.pageX;
             this.box.y = event.pageY;
 
+            this.count_label = document.createElement("span");
+            this.count_label.style.position = "absolute";
+            this.count_label.style.visibility = "visible";
+            this.count_label.style.fontSize = "10px";
+            this.count_label.style.font = "Arial, sans-serif";
+            this.count_label.style.color = "#516F9C";
+            this.count_label.style.border = "2px dashed #516F9C";
+
             document.body.appendChild(this.box);
+            document.body.appendChild(this.count_label);
 
             this.mouseOn = true
 
@@ -535,7 +544,11 @@ class OpenLinks {
     }
 
     mousemove(e) {
-        if (!this.mouseOn || !e.shiftKey) return;
+        if (!this.mouseOn || !e.shiftKey) {
+            this.clear_up();
+            this.clearEventBubble(e);
+            return
+        }
         this.clearEventBubble(e);
         this.update_box(e.pageX, e.pageY);
         this.highlight_link();
@@ -543,11 +556,12 @@ class OpenLinks {
 
     mouseup(e) {
         var _dic = {}
-        if (!this.mouseOn || !e.shiftKey) return;
-        this.update_box(e.pageX, e.pageY);
-        if (this.box != null) {
-            this.box.parentNode.removeChild(this.box);
+        if (!this.mouseOn || !e.shiftKey) {
+            this.clear_up();
+            this.clearEventBubble(e);
+            return
         }
+        this.update_box(e.pageX, e.pageY);
 
         _dic['url'] = this.open_links;
         _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
@@ -584,6 +598,9 @@ class OpenLinks {
         this.box.style.width = this.box.x2 - this.box.x1 + "px";
         this.box.style.top = this.box.y1 + "px";
         this.box.style.height = this.box.y2 - this.box.y1 + "px";
+
+        this.count_label.style.left = this.box.x2 + 2 + "px";
+        this.count_label.style.top = this.box.y1 + "px";
     }
 
     links_handle() {
@@ -680,6 +697,8 @@ class OpenLinks {
         if (this.smart_select && this.open_links.length == 0) {
             this.smart_select = false;
         }
+
+        this.count_label.innerText =  "Num:" + this.open_links.length;
     }
 
     getXY(element) {
@@ -723,6 +742,13 @@ class OpenLinks {
     }
 
     clear_up() {
+        if (this.box != null) {
+            this.box.style.visibility = 'hidden';
+        }
+        if (this.count_label != null) {
+            this.count_label.style.visibility = 'hidden';
+        }
+
         document.removeEventListener('mousedown', this.constructor, false);
         document.removeEventListener('mousemove', this.mousedown, false);
         document.removeEventListener('mouseup', this.mousedown, false);

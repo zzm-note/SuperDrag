@@ -2,6 +2,10 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.1.2
+修复框选链接bug
+增加实时显示已框选链接数量
+
 v3.1.1
 修复框选链接bug
 
