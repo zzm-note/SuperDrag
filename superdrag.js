@@ -111,7 +111,7 @@ class SuperDrag {
         this._dic.startX = event.x;
         this._dic.startY = event.y;
 
-        document.addEventListener('dragover', this.dragover, false);
+        document.addEventListener('dragover', ev => this.dragover(ev), false);
         document.addEventListener('drop', ev => this.drop(ev, superDrag), false);
     }
 
