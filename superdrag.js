@@ -538,27 +538,27 @@ class OpenLinks {
 
             this.update_box(event.pageX, event.pageY)
 
-            document.addEventListener('mousemove', ev => this.mousemove(ev), false);
-            document.addEventListener('mouseup', ev => this.mouseup(ev), false);
+            document.addEventListener('mousemove', ev => this.mousemove(ev, event), false);
+            document.addEventListener('mouseup', ev => this.mouseup(ev, event), false);
         }
     }
 
-    mousemove(e) {
+    mousemove(e, event) {
         if (!this.mouseOn || !e.shiftKey) {
             this.clear_up();
-            this.clearEventBubble(e);
+            this.clearEventBubble(event);
             return
         }
-        this.clearEventBubble(e);
+        this.clearEventBubble(event);
         this.update_box(e.pageX, e.pageY);
         this.highlight_link();
     }
 
-    mouseup(e) {
+    mouseup(e, event) {
         var _dic = {}
         if (!this.mouseOn || !e.shiftKey) {
             this.clear_up();
-            this.clearEventBubble(e);
+            this.clearEventBubble(event);
             return
         }
         this.update_box(e.pageX, e.pageY);
@@ -570,7 +570,7 @@ class OpenLinks {
 
         this.highlight_link();
         this.clear_up();
-        this.clearEventBubble(e);
+        this.clearEventBubble(event);
     }
 
     update_box(x, y) {
