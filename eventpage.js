@@ -7,7 +7,15 @@ chrome.extension.onMessage.addListener(message => {
       }  else {
         // message['url'].reverse();
         for (var i in message['url']){
-          chrome.tabs.create({ index: activeTab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: activeTab.id, active: message['active'] });
+          if (message['active'] == true){
+            if (i == 0){
+              chrome.tabs.create({ index: activeTab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: activeTab.id, active: message['active'] });
+            } else {
+              chrome.tabs.create({ index: activeTab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: activeTab.id, active: false });
+            }
+          } else {
+            chrome.tabs.create({ index: activeTab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: activeTab.id, active: message['active'] });
+          }
         }
       }
     });

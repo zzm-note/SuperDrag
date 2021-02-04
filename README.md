@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.2.1
+优化前台打开框选链接
+
 v3.2.0
 修改框选链接打开顺序
 
