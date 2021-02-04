@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.2.0
+修改框选链接打开顺序
+
 v3.1.3
 修复框选链接后拖拽功能不可用的问题
 

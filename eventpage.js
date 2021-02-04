@@ -5,7 +5,7 @@ chrome.extension.onMessage.addListener(message => {
       if (typeof message['url'] == "string"){
         chrome.tabs.create({ index: activeTab.index + 1, url: message['url'], openerTabId: activeTab.id, active: message['active'] });
       }  else {
-        message['url'].reverse();
+        // message['url'].reverse();
         for (var i in message['url']){
           chrome.tabs.create({ index: activeTab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: activeTab.id, active: message['active'] });
         }
