@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>SuperDrag Extension Options</title>
     <script src="common.js"></script>
     <script src="options.js"></script>
@@ -27,8 +28,15 @@
     </div>
     <hr>
     <div>
-        <select id="openLinks"></select>
         <span id="openLinksDesc" style="font-size: 15px"></span>
+        <input id="keyCode" type="text" placeholder="event.key" style="width: 60px">
+        <span id="openLinksDesc2" style="font-size: 15px"></span>
+        <select id="openLinks"></select>
+        <span id="openLinksDesc3" style="font-size: 15px"></span>
+        <a href="https://keycode.info/" target="_blank" style="font-size: 14px; color: grey">👉获取event.key</a>
+        <div>
+            <small id="openLinksPrompt" style="font-size: 14px; color: grey"></small>
+        </div>
     </div>
 </fieldset>
 

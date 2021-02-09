@@ -504,47 +504,60 @@ class OpenLinks {
         this.setting = superDrag;
         this.mouseOn = false;
         this.smart_select = false;
+        this.keyCode = null;
+        document.addEventListener('keydown', ev => this.keydown(ev), false);
+        document.addEventListener('keyup', ev => this.keyup(ev), false);
         document.addEventListener('mousedown', ev => this.mousedown(ev), false);
     }
 
+    keydown(ev){
+        this.keyCode = ev.key;
+    }
+
+    keyup(ev) {
+        this.keyCode = null;
+    }
+
     mousedown(event) {
-        if (event.buttons === 1 && event.shiftKey) {
-            this.page_links = document.links;
-            this.links = this.links_handle();
-            this.open_links = [];
+        if (this.keyCode) {
+            if (event.buttons === 1 && this.keyCode.toUpperCase() == this.setting.superDrag.keyCode.toUpperCase()) {
+                this.page_links = document.links;
+                this.links = this.links_handle();
+                this.open_links = [];
 
-            this.clearEventBubble(event);
-            // 创建选框
-            this.box = document.createElement("span");
-            this.box.style.margin = "0px auto";
-            this.box.style.border = "2px dashed #516F9C";
-            this.box.style.position = "absolute";
-            this.box.style.visibility = "visible";
-            this.box.x = event.pageX;
-            this.box.y = event.pageY;
+                this.clearEventBubble(event);
+                // 创建选框
+                this.box = document.createElement("span");
+                this.box.style.margin = "0px auto";
+                this.box.style.border = "2px dashed #516F9C";
+                this.box.style.position = "absolute";
+                this.box.style.visibility = "visible";
+                this.box.x = event.pageX;
+                this.box.y = event.pageY;
 
-            this.count_label = document.createElement("span");
-            this.count_label.style.position = "absolute";
-            this.count_label.style.visibility = "visible";
-            this.count_label.style.fontSize = "10px";
-            this.count_label.style.font = "Arial, sans-serif";
-            this.count_label.style.color = "#516F9C";
-            this.count_label.style.border = "2px dashed #516F9C";
+                this.count_label = document.createElement("span");
+                this.count_label.style.position = "absolute";
+                this.count_label.style.visibility = "visible";
+                this.count_label.style.fontSize = "10px";
+                this.count_label.style.font = "Arial, sans-serif";
+                this.count_label.style.color = "#516F9C";
+                this.count_label.style.border = "2px dashed #516F9C";
 
-            document.body.appendChild(this.box);
-            document.body.appendChild(this.count_label);
+                document.body.appendChild(this.box);
+                document.body.appendChild(this.count_label);
 
-            this.mouseOn = true
+                this.mouseOn = true;
 
-            this.update_box(event.pageX, event.pageY)
+                this.update_box(event.pageX, event.pageY);
 
-            document.addEventListener('mousemove', ev => this.mousemove(ev, event), false);
-            document.addEventListener('mouseup', ev => this.mouseup(ev, event), false);
+                document.addEventListener('mousemove', ev => this.mousemove(ev, event), false);
+                document.addEventListener('mouseup', ev => this.mouseup(ev, event), false);
+            }
         }
     }
 
     mousemove(e, event) {
-        if (!this.mouseOn || !e.shiftKey) {
+        if (!this.mouseOn || !this.keyCode) {
             this.clear_up();
             this.clearEventBubble(event);
             return
@@ -556,7 +569,7 @@ class OpenLinks {
 
     mouseup(e, event) {
         var _dic = {}
-        if (!this.mouseOn || !e.shiftKey) {
+        if (!this.mouseOn || !this.keyCode) {
             this.clear_up();
             this.clearEventBubble(event);
             return
@@ -752,6 +765,8 @@ class OpenLinks {
         document.removeEventListener('mousedown', this.constructor, false);
         document.removeEventListener('mousemove', this.mousedown, false);
         document.removeEventListener('mouseup', this.mousedown, false);
+        document.removeEventListener('keyup', this.constructor, false);
+        document.removeEventListener('keydown', this.constructor, false);
 
         for (var i = 0; i < this.links.length; i++) {
             if (this.links[i].box !== null) {

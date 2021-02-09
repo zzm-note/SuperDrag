@@ -42,6 +42,15 @@
 		"message" : "下载图片弹出文件另存为对话框"
 	},
 	"openLinksDesc" : {
-		"message" : "按住shift键鼠标左键框选打开多个链接"
+		"message" : "按住"
+	},
+	"openLinksDesc2" : {
+		"message" : "键鼠标左键框选"
+	},
+	"openLinksDesc3" : {
+		"message" : "打开多个链接"
+	},
+	"openLinksPrompt" : {
+		"message" : "\u261d按键输入框为空则关闭框选链接功能！"
 	}
 }

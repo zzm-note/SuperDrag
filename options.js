@@ -116,15 +116,21 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("timeout").addEventListener(
         "change", function () {
             if(isNaN(this.value) || this.value.length === 0) {
-                alert("\u4E0D\u80FD\u8F93\u5165\u7A7A\u6216\u975E\u6574\u578B\uFF01");
+                alert("不能输入空或非整型！");
                 document.getElementById('timeout').value = superDrag.superDrag.timeout;
             } else {
                 superDrag.superDrag.timeout = Number(this.value);
                 _save(superDrag.superDrag);
             }
         }, false);
+    document.getElementById("keyCode").addEventListener(
+        "input", function () {
+                superDrag.superDrag.keyCode = this.value;
+                _save(superDrag.superDrag);
+        }, false);
 
     document.getElementById('timeout').value = superDrag.superDrag.timeout;
+    document.getElementById('keyCode').value = superDrag.superDrag.keyCode;
     for (i = 0; i < 3; i++) {
         _s = _init_effect_text(i);
     }
@@ -147,6 +153,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('firstEventDesc').innerHTML = chrome.i18n.getMessage('firstEventDesc');
     document.getElementById('saveAsDesc').innerHTML = chrome.i18n.getMessage('saveAsDesc');
     document.getElementById('openLinksDesc').innerHTML = chrome.i18n.getMessage('openLinksDesc');
+    document.getElementById('openLinksDesc2').innerHTML = chrome.i18n.getMessage('openLinksDesc2');
+    document.getElementById('openLinksDesc3').innerHTML = chrome.i18n.getMessage('openLinksDesc3');
+    document.getElementById('openLinksPrompt').innerHTML = chrome.i18n.getMessage('openLinksPrompt');
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
