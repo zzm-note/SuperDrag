@@ -4,7 +4,7 @@ function _getDefault() {
 		timeout : 1000,
 		firstEvent: true,
 		saveAs: false,
-		keyCode: 'z',
+		keyCode: "z",
 		openLinksOpenType: 1,
 
 		effect_text : 0,
@@ -15,7 +15,7 @@ function _getDefault() {
 		effect_link : 0,
 		open_type_link : [0, 1, 0, 1],
 		link_type : [1, 3, 0, 0],
-		linkSearchEngines : [1, 1, 1, 1],
+		linkSearchEngines : [6, 6, 6, 6],
 		linkTextSelect : false,
 
 		effect_img : 0,
