@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.3.1
+设置默认值
+
 v3.3.0
 1.框选链接支持自定义按键
 2.其他优化
