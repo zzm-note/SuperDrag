@@ -2,6 +2,7 @@ chrome.extension.onMessage.addListener(message => {
   if (message['flag'] == 'openTable') {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       const activeTab = tabs[0];
+      // console.log(message);
       if (typeof message['url'] == "string"){
         chrome.tabs.create({ index: activeTab.index + 1, url: message['url'], openerTabId: activeTab.id, active: message['active'] });
       }  else {

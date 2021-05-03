@@ -104,15 +104,14 @@ class SuperDrag {
         ) && !element.disabled;
 
         document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag),false);
+        document.addEventListener('dragover', ev => this.dragover(ev), false);
+        document.addEventListener('drop', ev => this.drop(ev, superDrag), false);
     }
 
     dragstart(event, superDrag) {
         this._dic.start_time = new Date().getTime();
         this._dic.startX = event.x;
         this._dic.startY = event.y;
-
-        document.addEventListener('dragover', ev => this.dragover(ev), false);
-        document.addEventListener('drop', ev => this.drop(ev, superDrag), false);
     }
 
     dragover(event) {
@@ -131,6 +130,8 @@ class SuperDrag {
         let time_collect;
         this._dic.stop_time = new Date().getTime();
         time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
+        // console.log(superDrag.superDrag);
+        // console.log(time_collect);
         if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
             && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
             let items;
@@ -423,8 +424,8 @@ class SuperDrag {
     clear_up() {
         this._dic = {};
         document.removeEventListener('dragstart', this.constructor, false);
-        document.removeEventListener('dragover', this.dragstart, false);
-        document.removeEventListener('drop', this.dragstart, false);
+        document.removeEventListener('dragover', this.constructor, false);
+        document.removeEventListener('drop', this.constructor, false);
     }
 
     // toast提示信息
