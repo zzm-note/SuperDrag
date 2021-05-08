@@ -52,5 +52,8 @@
 	},
 	"openLinksPrompt" : {
 		"message" : "\u261d按键输入框为空则关闭框选链接功能！"
+	},
+	"effectPrompt" : {
+		"message" : "\uD83D\uDC48此处可选4个方向或2个方向拖拽哦\uD83D\uDE01"
 	}
 }

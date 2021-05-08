@@ -156,6 +156,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('openLinksDesc2').innerHTML = chrome.i18n.getMessage('openLinksDesc2');
     document.getElementById('openLinksDesc3').innerHTML = chrome.i18n.getMessage('openLinksDesc3');
     document.getElementById('openLinksPrompt').innerHTML = chrome.i18n.getMessage('openLinksPrompt');
+    document.getElementById('effect_text_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
+    document.getElementById('effect_link_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
+    document.getElementById('effect_img_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
