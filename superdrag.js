@@ -540,9 +540,10 @@ class OpenLinks {
                 this.count_label.style.position = "absolute";
                 this.count_label.style.visibility = "visible";
                 this.count_label.style.fontSize = "10px";
+                this.count_label.style.fontWeight = "bolder";
                 this.count_label.style.font = "Arial, sans-serif";
-                this.count_label.style.color = "#516F9C";
-                this.count_label.style.border = "2px dashed #516F9C";
+                this.count_label.style.color = "#FF0000";
+                this.count_label.style.border = "2px dashed #FF0000";
 
                 document.body.appendChild(this.box);
                 document.body.appendChild(this.count_label);
