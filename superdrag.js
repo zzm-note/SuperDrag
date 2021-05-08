@@ -543,7 +543,7 @@ class OpenLinks {
                 this.count_label.style.fontWeight = "bolder";
                 this.count_label.style.font = "Arial, sans-serif";
                 this.count_label.style.color = "#FF0000";
-                this.count_label.style.border = "2px dashed #FF0000";
+                this.count_label.style.border = "2px dashed #516F9C";
 
                 document.body.appendChild(this.box);
                 document.body.appendChild(this.count_label);
