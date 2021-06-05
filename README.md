@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.3.5
+改个提示颜色，增加可视度
+
 v3.3.3
 1.fix：“自动取消拖拽操作的超时时间”设为0，引发的单个页面多次拖拽打开相同几个页面的错误
 2.Doge多吉搜索502，默认值改回百度
