@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.3.6
+拖拽文本去掉多余添加的“HTTPS”前缀
+
 v3.3.5
 改个提示颜色，增加可视度
 
