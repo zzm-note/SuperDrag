@@ -382,7 +382,7 @@ class SuperDrag {
             } else if (urlPattern.test(keyword)) {
                 if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
                     event.preventDefault();
-                    keyword = "https://" + keyword;
+//                     keyword = "https://" + keyword;
                     this._dic['url'] = keyword;
                     this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                     this._dic['flag'] = 'openTable';
