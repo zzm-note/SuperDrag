@@ -3,7 +3,8 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 ### 更新日志：
 ```
 v3.3.7
-fix bug
+1.修改拖拽打开标签的顺序，与鼠标中建一致
+2.fix bug
 
 v3.3.6
 拖拽文本去掉多余添加的“HTTPS”前缀
