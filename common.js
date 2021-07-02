@@ -4,7 +4,7 @@ function _getDefault() {
 		timeout : 1000,
 		firstEvent: true,
 		saveAs: false,
-		keyCode: "z",
+		keyCode: "Escape",
 		openLinksOpenType: 1,
 
 		effect_text : 0,
