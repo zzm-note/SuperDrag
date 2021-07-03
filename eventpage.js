@@ -3,7 +3,6 @@ chrome.extension.onMessage.addListener(message => {
     chrome.tabs.getAllInWindow(tabs => {
       // console.log(tabs)
       // console.log(message);
-      let curTab
       if (typeof message['url'] == "string") {
         for (const tab of tabs.reverse()) {
           if (tab.hasOwnProperty("openerTabId") || tab.active == true) {
