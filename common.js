@@ -1,5 +1,6 @@
 function _getDefault() {
 	return {
+		direction_sel : 0,
 		enableAlt : true,
 		timeout : 1000,
 		firstEvent: true,
@@ -25,12 +26,13 @@ function _getDefault() {
 	};
 }
 
-var _effect_text = ["上下左右", "上下", "左右"];
+var direction_val = ["左上、右上、左下、右下", "上下左右"];
+var _effect_text = ["四面八方", "上下", "左右"];
 var _open_type = ["前台", "后台"];
 var _text_type = ["搜索", "复制"];
-var _effect_link = ["上下左右", "上下", "左右"];
+var _effect_link = ["四面八方", "上下", "左右"];
 var _link_type = ["打开链接", "复制链接", "复制链接文本", "搜索链接文本"];
-var _effect_img = ["上下左右", "上下", "左右"];
+var _effect_img = ["四面八方", "上下", "左右"];
 var _img_type = ["打开图片指向网站", "打开图片", "复制图片", "复制图片链接", "下载图片", "以图搜图"];
 
 var _build_in_seach_engines = [{

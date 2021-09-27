@@ -143,14 +143,26 @@ class SuperDrag {
             let moveX = this._dic.endX - this._dic.startX;
             let moveY = this._dic.endY - this._dic.startY;
             if (superDrag.superDrag.effect_text === 0) {
-                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                    position_text = 0;
-                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                    position_text = 1;
-                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                    position_text = 2;
+                if (superDrag.superDrag.direction_sel === 0) {
+                    if (moveX < 0 && moveY < 0) {
+                        position_text = 0;
+                    } else if (moveX < 0 && moveY >= 0) {
+                        position_text = 1;
+                    } else if (moveX >= 0 && moveY < 0) {
+                        position_text = 2;
+                    } else {
+                        position_text = 3;
+                    }
                 } else {
-                    position_text = 3;
+                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                        position_text = 0;
+                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                        position_text = 1;
+                    } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                        position_text = 2;
+                    } else {
+                        position_text = 3;
+                    }
                 }
             } else if (superDrag.superDrag.effect_text === 1) {
                 if (moveY < 0) {
@@ -166,14 +178,26 @@ class SuperDrag {
                 }
             }
             if (superDrag.superDrag.effect_link === 0) {
-                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                    position_link = 0;
-                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                    position_link = 1;
-                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                    position_link = 2;
+                if (superDrag.superDrag.direction_sel === 0) {
+                    if (moveX < 0 && moveY < 0) {
+                        position_link = 0;
+                    } else if (moveX < 0 && moveY >= 0) {
+                        position_link = 1;
+                    } else if (moveX >= 0 && moveY < 0) {
+                        position_link = 2;
+                    } else {
+                        position_link = 3;
+                    }
                 } else {
-                    position_link = 3;
+                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                        position_link = 0;
+                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                        position_link = 1;
+                    } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                        position_link = 2;
+                    } else {
+                        position_link = 3;
+                    }
                 }
             } else if (superDrag.superDrag.effect_link === 1) {
                 if (moveY < 0) {
@@ -189,14 +213,26 @@ class SuperDrag {
                 }
             }
             if (superDrag.superDrag.effect_img === 0) {
-                if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
-                    position_img = 0;
-                } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
-                    position_img = 1;
-                } else if (Math.abs(moveY) < Math.abs(moveX) && moveX < 0) {
-                    position_img = 2;
+                if (superDrag.superDrag.direction_sel === 0) {
+                    if (moveX < 0 && moveY < 0) {
+                        position_img = 0;
+                    } else if (moveX < 0 && moveY >= 0) {
+                        position_img = 1;
+                    } else if (moveX >= 0 && moveY < 0) {
+                        position_img = 2;
+                    } else {
+                        position_img = 3;
+                    }
                 } else {
-                    position_img = 3;
+                    if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                        position_img = 0;
+                    } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                        position_img = 1;
+                    } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                        position_img = 2;
+                    } else {
+                        position_img = 3;
+                    }
                 }
             } else if (superDrag.superDrag.effect_img === 1) {
                 if (moveY < 0) {

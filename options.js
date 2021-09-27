@@ -2,6 +2,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     let types;
     let _s;
     let i;
+    arrow = [['&#8598;','&#8601;','&#8599;','&#8600;'], ['&#8593;','&#8595;','&#8592;','&#8594;']]
+    document.getElementById("direction_sel").addEventListener(
+        "change", function () {
+            _save_direction_sel(this, superDrag);
+        }, false);
     document.getElementById("effect_text").addEventListener(
         "change", function () {
             _save_effect_text(this, superDrag);
@@ -135,18 +140,20 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _s = _init_effect_text(i);
     }
     _s.selectedIndex = superDrag.superDrag.effect_text;
-    _load_effect_text(superDrag.superDrag.effect_text);
+    _load_effect_text(superDrag.superDrag.effect_text, superDrag);
     for (i = 0; i < 3; i++) {
         _s = _init_effect_link(i);
     }
     _s.selectedIndex = superDrag.superDrag.effect_link;
-    _load_effect_link(superDrag.superDrag.effect_link);
+    _load_effect_link(superDrag.superDrag.effect_link, superDrag);
     for (i = 0; i < 3; i++) {
         _s = _init_effect_img(i);
     }
     _s.selectedIndex = superDrag.superDrag.effect_img;
-    _load_effect_img(superDrag.superDrag.effect_img);
+    _load_effect_img(superDrag.superDrag.effect_img, superDrag);
     document.getElementById('common').innerHTML = chrome.i18n.getMessage('common');
+    document.getElementById('direction').innerHTML = chrome.i18n.getMessage('direction');
+    document.getElementById('direction_des').innerHTML = chrome.i18n.getMessage('direction_des');
     document.getElementById('enableAlt_text').innerHTML = chrome.i18n.getMessage('enableAlt_text');
     document.getElementById('timeout_des').innerHTML = chrome.i18n.getMessage('timeout_des');
     document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
@@ -186,6 +193,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _s = _init_open_type_img(i);
         _s.selectedIndex = types[i];
     }
+
+    _direction_sel_select = _init_direction_sel()
+    _direction_sel_select.selectedIndex = superDrag.superDrag.direction_sel;
 
     _open_links_select = _init_open_type_open_links()
     _open_links_select.selectedIndex = superDrag.superDrag.openLinksOpenType;
@@ -244,7 +254,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         _s.selectedIndex = types[i];
     }
 
-    function _load_effect_text(_id) {
+    function _load_effect_text(_id, superDrag) {
         if (_id === 1) {
             for (i of [0, 1]) {
                 document.getElementById("test_" + i).style.display = "";
@@ -252,6 +262,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("test_" + i).style.display = "none";
             }
+            document.getElementById("text_up").innerHTML = arrow[1][0];
+            document.getElementById("text_down").innerHTML = arrow[1][1];
         } else if (_id === 2) {
             for (i of [0, 1]) {
                 document.getElementById("test_" + i).style.display = "none";
@@ -259,14 +271,20 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("test_" + i).style.display = "";
             }
+            document.getElementById("text_left").innerHTML = arrow[1][2];
+            document.getElementById("text_right").innerHTML = arrow[1][3];
         } else if (_id === 0) {
             for (i of [0, 1, 2, 3]) {
                 document.getElementById("test_" + i).style.display = "";
             }
+            document.getElementById("text_up").innerHTML = arrow[superDrag.superDrag.direction_sel][0];
+            document.getElementById("text_down").innerHTML = arrow[superDrag.superDrag.direction_sel][1];
+            document.getElementById("text_left").innerHTML = arrow[superDrag.superDrag.direction_sel][2];
+            document.getElementById("text_right").innerHTML = arrow[superDrag.superDrag.direction_sel][3];
         }
     }
 
-    function _load_effect_link(_id) {
+    function _load_effect_link(_id, superDrag) {
         if (_id === 1) {
             for (i of [0, 1]) {
                 document.getElementById("link_" + i).style.display = "";
@@ -275,6 +293,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 document.getElementById("link_" + i).style.display = "none";
             }
             document.getElementById("linkTextSelect").style.display = "none";
+
+            document.getElementById("link_up").innerHTML = arrow[1][0];
+            document.getElementById("link_down").innerHTML = arrow[1][1];
         } else if (_id === 2) {
             for (i of [0, 1]) {
                 document.getElementById("link_" + i).style.display = "none";
@@ -283,15 +304,23 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 document.getElementById("link_" + i).style.display = "";
             }
             document.getElementById("linkTextSelect").style.display = "none";
+
+            document.getElementById("link_left").innerHTML = arrow[1][2];
+            document.getElementById("link_right").innerHTML = arrow[1][3];
         } else if (_id === 0) {
             for (i of [0, 1, 2, 3]) {
                 document.getElementById("link_" + i).style.display = "";
             }
             document.getElementById("linkTextSelect").style.display = "none";
+
+            document.getElementById("link_up").innerHTML = arrow[superDrag.superDrag.direction_sel][0];
+            document.getElementById("link_down").innerHTML = arrow[superDrag.superDrag.direction_sel][1];
+            document.getElementById("link_left").innerHTML = arrow[superDrag.superDrag.direction_sel][2];
+            document.getElementById("link_right").innerHTML = arrow[superDrag.superDrag.direction_sel][3];
         }
     }
     
-    function _load_effect_img(_id) {
+    function _load_effect_img(_id, superDrag) {
         if (_id === 1) {
             for (i of [0, 1]) {
                 document.getElementById("img_" + i).style.display = "";
@@ -299,6 +328,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("img_" + i).style.display = "none";
             }
+            document.getElementById("img_up").innerHTML = arrow[1][0];
+            document.getElementById("img_down").innerHTML = arrow[1][1];
         } else if (_id === 2) {
             for (i of [0, 1]) {
                 document.getElementById("img_" + i).style.display = "none";
@@ -306,10 +337,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("img_" + i).style.display = "";
             }
+            document.getElementById("img_left").innerHTML = arrow[1][2];
+            document.getElementById("img_right").innerHTML = arrow[1][3];
         } else if (_id === 0) {
             for (i of [0, 1, 2, 3]) {
                 document.getElementById("img_" + i).style.display = "";
             }
+            document.getElementById("img_up").innerHTML = arrow[superDrag.superDrag.direction_sel][0];
+            document.getElementById("img_down").innerHTML = arrow[superDrag.superDrag.direction_sel][1];
+            document.getElementById("img_left").innerHTML = arrow[superDrag.superDrag.direction_sel][2];
+            document.getElementById("img_right").innerHTML = arrow[superDrag.superDrag.direction_sel][3];
         }
     }
 
@@ -421,6 +458,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_direction_sel() {
+        const _select = document.getElementById("direction_sel");
+        if (!_select.options.length) {
+            for (let i = 0; i < direction_val.length; i++) {
+                _select.add(new Option(direction_val[i], i, false));
+            }
+        }
+        return _select;
+    }
+
     function _init_open_type_open_links() {
         const _select = document.getElementById("openLinks");
         if (!_select.options.length) {
@@ -497,23 +544,47 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _save_direction_sel(_select, superDrag) {// select
+        const _v = _select.options[_select.selectedIndex].value;
+        if (superDrag.superDrag.effect_text === 0) {
+            document.getElementById("text_up").innerHTML = arrow[_v][0];
+            document.getElementById("text_down").innerHTML = arrow[_v][1];
+            document.getElementById("text_left").innerHTML = arrow[_v][2];
+            document.getElementById("text_right").innerHTML = arrow[_v][3];
+        }
+        if (superDrag.superDrag.effect_link === 0) {
+            document.getElementById("link_up").innerHTML = arrow[_v][0];
+            document.getElementById("link_down").innerHTML = arrow[_v][1];
+            document.getElementById("link_left").innerHTML = arrow[_v][2];
+            document.getElementById("link_right").innerHTML = arrow[_v][3];
+        }
+        if (superDrag.superDrag.effect_img === 0) {
+            document.getElementById("img_up").innerHTML = arrow[_v][0];
+            document.getElementById("img_down").innerHTML = arrow[_v][1];
+            document.getElementById("img_left").innerHTML = arrow[_v][2];
+            document.getElementById("img_right").innerHTML = arrow[_v][3];
+        }
+        superDrag.superDrag.direction_sel = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
     function _save_effect_text(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
-        _load_effect_text(Number(_v));
+        _load_effect_text(Number(_v), superDrag);
         superDrag.superDrag.effect_text = Number(_v);
         _save(superDrag.superDrag)
     }
 
     function _save_effect_link(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
-        _load_effect_link(Number(_v));
+        _load_effect_link(Number(_v), superDrag);
         superDrag.superDrag.effect_link = Number(_v);
         _save(superDrag.superDrag)
     }
 
     function _save_effect_img(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
-        _load_effect_img(Number(_v));
+        _load_effect_img(Number(_v), superDrag);
         superDrag.superDrag.effect_img = Number(_v);
         _save(superDrag.superDrag)
     }

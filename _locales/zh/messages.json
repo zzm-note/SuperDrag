@@ -26,6 +26,12 @@
 	"common" : {
 		"message" : "常规设置"
 	},
+	"direction" : {
+		"message" : "选择拖拽方向："
+	},
+	"direction_des" : {
+		"message" : "注：不适用于双向拖拽，双向拖拽只有上下或左右！"
+	},
 	"enableAlt_text" : {
 		"message" : "拖拽过程中按下Alt键取消拖拽操作(MAC原生支持，取消无效)"
 	},

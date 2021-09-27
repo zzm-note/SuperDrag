@@ -2,6 +2,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.3.8
+增加左上、右上、左下、右下的拖拽方向，默认为此项。可选原来的上下左右方向
+
 v3.3.7
 1.修改拖拽打开标签的顺序，与鼠标中建一致
 2.fix bug
