@@ -309,9 +309,9 @@ class SuperDrag {
                             this._dic['flag'] = 'download';
                             try {
                                 chrome.extension.sendMessage(this._dic);
-                                this.toast("下载图片，处理中……");
+                                SuperDrag.toast("下载图片，处理中……");
                             } catch (err) {
-                                this.toast("下载图片失败！");
+                                SuperDrag.toast("下载图片失败:" + err.message);
                             }
                         } else if (superDrag.superDrag.img_type[position_img] === 5) {
                             event.preventDefault();
@@ -377,9 +377,9 @@ class SuperDrag {
                         this._dic['saveAs'] = superDrag.superDrag.saveAs;
                         try {
                             chrome.extension.sendMessage(this._dic);
-                            this.toast("下载图片，处理中……");
+                            SuperDrag.toast("下载图片，处理中……");
                         } catch (err) {
-                            this.toast("下载图片失败！");
+                            SuperDrag.toast("下载图片失败:" + err.message);
                         }
                     } else if (superDrag.superDrag.img_type[position_img] === 5) {
                         event.preventDefault();
@@ -465,7 +465,7 @@ class SuperDrag {
     }
 
     // toast提示信息
-    toast(msg, duration) {
+    static toast(msg, duration) {
         duration = isNaN(duration) ? 3000 : duration;
         var m = document.createElement('div');
         m.innerHTML = msg;
@@ -504,8 +504,10 @@ class SuperDrag {
                 var successful = document.execCommand('copy');
                 var msg = successful ? 'successful' : 'unsuccessful';
                 console.log(msg);
+                SuperDrag.toast("复制成功");
             } catch (err) {
                 console.warn('Was not possible to copy te text: ', err);
+                SuperDrag.toast("复制失败:" + err.message);
             }
 
             document.body.removeChild(textArea)
@@ -513,15 +515,17 @@ class SuperDrag {
         }
         navigator.clipboard.writeText(word).then(function () {
             console.log(`successful!`);
+            SuperDrag.toast("复制成功")
         }, function (err) {
             console.warn('unsuccessful!', err);
+            SuperDrag.toast("复制失败:" + err.message);
         });
     }
 
-// 复制图片
+    // 复制图片
     async copyImage(url) {
         try {
-            const data = await fetch(url);
+            const data = await fetch(url, {mode: "no-cors"});
             const blob = await data.blob();
             await navigator.clipboard.write([
                 new ClipboardItem({
@@ -529,8 +533,10 @@ class SuperDrag {
                 })
             ]);
             console.log('Image copied.');
+            SuperDrag.toast("复制成功")
         } catch (err) {
             console.error(err.name, err.message);
+            SuperDrag.toast("复制失败:" + err.message);
         }
     }
 }

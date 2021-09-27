@@ -26,7 +26,7 @@ function _getDefault() {
 	};
 }
 
-var direction_val = ["左上、右上、左下、右下", "上下左右"];
+var direction_val = ["↖ ↙ ↗ ↘", "↑ ↓ ← →"];
 var _effect_text = ["四面八方", "上下", "左右"];
 var _open_type = ["前台", "后台"];
 var _text_type = ["搜索", "复制"];

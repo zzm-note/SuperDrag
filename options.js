@@ -2,7 +2,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     let types;
     let _s;
     let i;
-    arrow = [['&#8598;','&#8601;','&#8599;','&#8600;'], ['&#8593;','&#8595;','&#8592;','&#8594;']]
+    arrow = [['↖','↙','↗','↘'], ['↑','↓','←','→']]
     document.getElementById("direction_sel").addEventListener(
         "change", function () {
             _save_direction_sel(this, superDrag);
