@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.3.9
+修改一些内置搜索引擎
+
 v3.3.8
 1.增加左上、右上、左下、右下的拖拽方向，默认为此项。可选原来的上下左右方向
 2.增加复制操作的toast提示
