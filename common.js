@@ -11,12 +11,12 @@ function _getDefault() {
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
-		searchEngines : [19, 11, 1, 1],
+		searchEngines : [19, 11, 0, 0],
 
 		effect_link : 0,
 		open_type_link : [0, 1, 0, 1],
 		link_type : [1, 3, 0, 0],
-		linkSearchEngines : [1, 1, 1, 1],
+		linkSearchEngines : [0, 0, 0, 0],
 		linkTextSelect : false,
 
 		effect_img : 0,
@@ -43,7 +43,10 @@ var _build_in_seach_engines = [{
 	"url" : "https://www.baidu.com/s?wd=%s&ie=utf-8"
 }, {
 	"name" : "『网页』必应",
-	"url" : "https://cn.bing.com/search?q=%s"
+	"url" : "https://www.bing.com/search?q=%s"
+}, {
+	"name" : "『网页』搜狗",
+	"url" : "https://www.sogou.com/web?query=%s"
 }, {
 	"name" : "『网页』duckduckgo",
 	"url" : "https://duckduckgo.com/?q=%s"
@@ -53,9 +56,6 @@ var _build_in_seach_engines = [{
 }, {
 	"name" : "『网页』秘迹搜索",
 	"url" : "https://mijisou.com/?q=%s&category_general=on&time_range=&language=zh-CN"
-}, {
-	"name" : "『网页』Doge多吉",
-	"url" : "https://www.dogedoge.com/results?q=%s"
 }, {
 	"name" : "『翻译』有道词典",
 	"url" : "http://dict.youdao.com/search?q=%s"
