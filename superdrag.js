@@ -402,8 +402,10 @@ class SuperDrag {
             } else if (event.srcElement.localName == 'img') {
                 if (superDrag.superDrag.img_type[position_img] === 0) {
                     event.preventDefault();
-                    if (event.path[1].localName == 'a' || event.path[2].localName == 'a') {
+                    if (event.path[1].localName == 'a') {
                         this._dic['url'] = event.path[1].href;
+                    } else if (event.path[2].localName == 'a') {
+                        this._dic['url'] = event.path[2].href;
                     } else {
                         this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
                     }
