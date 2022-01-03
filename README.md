@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.4.0
+修复拖拽时有概率不触发的问题
+
 v3.3.9
 修改一些内置搜索引擎
 
