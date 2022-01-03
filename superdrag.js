@@ -99,13 +99,14 @@ class SuperDrag {
     constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
-        this.isTextArea = element => element.matches(
-            'input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], textarea'
-        ) && !element.disabled;
+        // this.isTextArea = element => element.matches(
+        //     'input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], textarea'
+        // ) && !element.disabled;
+        this.isTextArea = false;
 
         document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag),false);
         document.addEventListener('dragover', ev => this.dragover(ev), false);
-        document.addEventListener('drop', ev => this.drop(ev, superDrag), false);
+        document.addEventListener('dragend', ev => this.dragend(ev, superDrag), false);
     }
 
     dragstart(event, superDrag) {
@@ -115,18 +116,26 @@ class SuperDrag {
     }
 
     dragover(event) {
-        if (event.dataTransfer.types.includes('text/uri-list')) {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'link';
-        } else if (event.dataTransfer.types.includes('text/plain')) {
-            if (!this.isTextArea(event.target)) {
-                event.preventDefault();
-                event.dataTransfer.dropEffect = 'link';
-            }
+        // event.dataTransfer.effectAllowed = "move";
+        // event.dataTransfer.dropEffect = "move";
+        // event.preventDefault();
+        if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
+            this.isTextArea = true;
+        } else {
+            this.isTextArea = false;
         }
+        // if (event.dataTransfer.types.includes('text/uri-list')) {
+        //     event.preventDefault();
+        //     event.dataTransfer.dropEffect = 'link';
+        // } else if (event.dataTransfer.types.includes('text/plain')) {
+        //     if (!this.isTextArea(event.target)) {
+        //         event.preventDefault();
+        //         event.dataTransfer.dropEffect = 'link';
+        //     }
+        // }
     }
 
-    drop(event, superDrag) {
+    dragend(event, superDrag) {
         let time_collect;
         this._dic.stop_time = new Date().getTime();
         time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
@@ -247,34 +256,72 @@ class SuperDrag {
                     position_img = 3;
                 }
             }
-            let keyword = event.dataTransfer.getData('text/plain').trim();
+            let keyword = window.getSelection().toString();
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-
-            if (event.dataTransfer.types.includes('text/uri-list')) {
-                items = event.dataTransfer.getData('text/html');
-                let domparser = new DOMParser();
-                let doc = domparser.parseFromString(items, 'text/html');
-
-                // console.log(doc.links);
-                // console.log(doc.images);
-
-                if (doc.links.length && doc.images.length) { //如果链接包含图片
+            console.log("fffffffffffffffffffffffffffffff");
+            console.log(event.srcElement.localName);
+            console.log(keyword);
+            debugger
+            if (keyword) {
+                if (urlPattern.test(keyword)) {
+                    if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea) {
+                        event.preventDefault();
+                        if (keyword.substr(0, 4) != 'http') {
+                            keyword = "http://" + keyword;
+                        }
+                        this._dic['url'] = keyword;
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea) {
+                        event.preventDefault();
+                        this.copyText(keyword);
+                    } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea) {
+                        event.preventDefault();
+                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    }
+                } else {
+                    debugger
+                    if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea) {
+                        event.preventDefault();
+                        if (superDrag.superDrag.searchEngines[position_text].url) {
+                            this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                        this._dic['flag'] = 'openTable';
+                        chrome.extension.sendMessage(this._dic);
+                    } else if (superDrag.superDrag.text_type[position_text] === 1 && !this.isTextArea) {
+                        event.preventDefault();
+                        this.copyText(keyword)
+                    }
+                }
+            } else if (event.srcElement.localName == 'a') {
+                if (event.srcElement.firstElementChild&&event.srcElement.firstElementChild.firstElementChild&&event.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
                     if (superDrag.superDrag.firstEvent) {
                         if (superDrag.superDrag.link_type[position_link] === 0) {
                             event.preventDefault();
-                            this._dic['url'] = keyword
+                            this._dic['url'] = event.srcElement.href
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
                         } else if (superDrag.superDrag.link_type[position_link] === 1) {
                             event.preventDefault();
-                            this.copyText(keyword);
+                            this.copyText(event.srcElement.href);
                         } else if (superDrag.superDrag.link_type[position_link] === 2) {
                             event.preventDefault();
-                            this.copyText(doc.links[0].text);
+                            this.copyText(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0]);
                         } else if (superDrag.superDrag.link_type[position_link] === 3) {
                             event.preventDefault();
-                            keyword = doc.links[0].text;
+                            keyword = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
                             if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                 this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                             } else {
@@ -287,25 +334,25 @@ class SuperDrag {
                     } else {
                         if (superDrag.superDrag.img_type[position_img] === 0) {
                             event.preventDefault();
-                            this._dic['url'] = event.dataTransfer.getData('text/uri-list');
+                            this._dic['url'] = event.srcElement.href;
                             this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
                         } else if (superDrag.superDrag.img_type[position_img] === 1) {
                             event.preventDefault();
-                            this._dic['url'] = doc.images[0].src;
+                            this._dic['url'] = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
                             this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
                         } else if (superDrag.superDrag.img_type[position_img] === 2) {
                             event.preventDefault();
-                            this.copyImage(doc.images[0].src);
+                            this.copyImage(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0]);
                         } else if (superDrag.superDrag.img_type[position_img] === 3) {
                             event.preventDefault();
-                            this.copyText(doc.images[0].src)
+                            this.copyText(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0])
                         } else if (superDrag.superDrag.img_type[position_img] === 4) {
                             event.preventDefault();
-                            this._dic['url'] = doc.images[0].src;
+                            this._dic['url'] = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
                             this._dic['flag'] = 'download';
                             try {
                                 chrome.extension.sendMessage(this._dic);
@@ -315,7 +362,7 @@ class SuperDrag {
                             }
                         } else if (superDrag.superDrag.img_type[position_img] === 5) {
                             event.preventDefault();
-                            keyword = doc.images[0].src;
+                            keyword = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
                             if (superDrag.superDrag.imgSearchEngines[position_img].url) {
                                 this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
                             } else {
@@ -326,85 +373,22 @@ class SuperDrag {
                             chrome.extension.sendMessage(this._dic);
                         }
                     }
-                } else if (doc.links.length) { //链接
+                } else {
                     if (superDrag.superDrag.link_type[position_link] === 0) {
                         event.preventDefault();
-                        this._dic['url'] = keyword
+                        this._dic['url'] = event.srcElement.href;
                         this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                         this._dic['flag'] = 'openTable';
                         chrome.extension.sendMessage(this._dic);
                     } else if (superDrag.superDrag.link_type[position_link] === 1) {
                         event.preventDefault();
-                        this.copyText(keyword);
+                        this.copyText(event.srcElement.href);
                     } else if (superDrag.superDrag.link_type[position_link] === 2) {
                         event.preventDefault();
-                        this.copyText(doc.links[0].text);
+                        this.copyText(event.srcElement.innerText);
                     } else if (superDrag.superDrag.link_type[position_link] === 3) {
                         event.preventDefault();
-                        keyword = doc.links[0].text;
-                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        } else {
-                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        }
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    }
-                } else if (doc.images.length) {//图片
-                    if (superDrag.superDrag.img_type[position_img] === 0) {
-                        event.preventDefault();
-                        this._dic['url'] = event.dataTransfer.getData('text/uri-list');
-                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                        event.preventDefault();
-                        this._dic['url'] = doc.images[0].src;
-                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                        event.preventDefault();
-                        this.copyImage(doc.images[0].src);
-                    } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                        event.preventDefault();
-                        this.copyText(doc.images[0].src)
-                    } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                        event.preventDefault();
-                        this._dic['url'] = doc.images[0].src;
-                        this._dic['flag'] = 'download';
-                        this._dic['saveAs'] = superDrag.superDrag.saveAs;
-                        try {
-                            chrome.extension.sendMessage(this._dic);
-                            SuperDrag.toast("下载图片，处理中……");
-                        } catch (err) {
-                            SuperDrag.toast("下载图片失败:" + err.message);
-                        }
-                    } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                        event.preventDefault();
-                        keyword = doc.images[0].src;
-                        if (superDrag.superDrag.imgSearchEngines[position_img].url) {
-                            this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        } else {
-                            this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        }
-                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    }
-                } else {
-                    if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        this._dic['url'] = keyword;
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
-                        event.preventDefault();
-                        this.copyText(keyword);
-                    } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
-                        event.preventDefault();
+                        keyword = event.srcElement.innerText;
                         if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                             this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                         } else {
@@ -415,42 +399,51 @@ class SuperDrag {
                         chrome.extension.sendMessage(this._dic);
                     }
                 }
-            } else if (urlPattern.test(keyword)) {
-                if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea(event.target)) {
+            } else if (event.srcElement.localName == 'img') {
+                if (superDrag.superDrag.img_type[position_img] === 0) {
                     event.preventDefault();
-                    keyword = "http://" + keyword;
-                    this._dic['url'] = keyword;
-                    this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                    this._dic['flag'] = 'openTable';
-                    chrome.extension.sendMessage(this._dic);
-                } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea(event.target)) {
-                    event.preventDefault();
-                    this.copyText(keyword);
-                } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea(event.target)) {
-                    event.preventDefault();
-                    if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                        this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    if (event.path[1].localName == 'a' || event.path[2].localName == 'a') {
+                        this._dic['url'] = event.path[1].href;
                     } else {
-                        this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
                     }
-                    this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                     this._dic['flag'] = 'openTable';
                     chrome.extension.sendMessage(this._dic);
-                }
-            } else if (event.dataTransfer.types.includes('text/plain')) {
-                if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea(event.target)) {
+                } else if (superDrag.superDrag.img_type[position_img] === 1) {
                     event.preventDefault();
-                    if (superDrag.superDrag.searchEngines[position_text].url) {
-                        this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
+                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic['flag'] = 'openTable';
+                    chrome.extension.sendMessage(this._dic);
+                } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                    event.preventDefault();
+                    this.copyImage(event.srcElement.currentSrc.split("?")[0]);
+                } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                    event.preventDefault();
+                    this.copyText(event.srcElement.currentSrc.split("?")[0])
+                } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                    event.preventDefault();
+                    this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
+                    this._dic['flag'] = 'download';
+                    this._dic['saveAs'] = superDrag.superDrag.saveAs;
+                    try {
+                        chrome.extension.sendMessage(this._dic);
+                        SuperDrag.toast("下载图片，处理中……");
+                    } catch (err) {
+                        SuperDrag.toast("下载图片失败:" + err.message);
+                    }
+                } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                    event.preventDefault();
+                    keyword = event.srcElement.currentSrc.split("?")[0];
+                    if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                        this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
                     } else {
-                        this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
                     }
-                    this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                     this._dic['flag'] = 'openTable';
                     chrome.extension.sendMessage(this._dic);
-                } else if (superDrag.superDrag.text_type[position_text] === 1 && !this.isTextArea(event.target)) {
-                    event.preventDefault();
-                    this.copyText(keyword)
                 }
             }
         }
@@ -461,7 +454,7 @@ class SuperDrag {
         this._dic = {};
         document.removeEventListener('dragstart', this.constructor, false);
         document.removeEventListener('dragover', this.constructor, false);
-        document.removeEventListener('drop', this.constructor, false);
+        document.removeEventListener('dragend', this.constructor, false);
     }
 
     // toast提示信息
