@@ -258,10 +258,9 @@ class SuperDrag {
             }
             let keyword = window.getSelection().toString();
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-            console.log("fffffffffffffffffffffffffffffff");
             console.log(event.srcElement.localName);
-            console.log(keyword);
-            debugger
+            console.log(event);
+            // debugger
             if (keyword) {
                 if (urlPattern.test(keyword)) {
                     if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea) {
@@ -288,7 +287,6 @@ class SuperDrag {
                         chrome.extension.sendMessage(this._dic);
                     }
                 } else {
-                    debugger
                     if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea) {
                         event.preventDefault();
                         if (superDrag.superDrag.searchEngines[position_text].url) {
@@ -402,12 +400,13 @@ class SuperDrag {
             } else if (event.srcElement.localName == 'img') {
                 if (superDrag.superDrag.img_type[position_img] === 0) {
                     event.preventDefault();
-                    if (event.path[1].localName == 'a') {
-                        this._dic['url'] = event.path[1].href;
-                    } else if (event.path[2].localName == 'a') {
-                        this._dic['url'] = event.path[2].href;
-                    } else {
-                        this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
+                    for(let value of event.path){
+                        if (value.localName == 'img') {
+                            this._dic['url'] = value.currentSrc.split("?")[0];
+                        } else if (value.localName == 'a') {
+                            this._dic['url'] = value.href;
+                            break;
+                        }
                     }
                     this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                     this._dic['flag'] = 'openTable';
