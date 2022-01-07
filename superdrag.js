@@ -99,13 +99,8 @@ class SuperDrag {
     constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
-        // this.isTextArea = element => element.matches(
-        //     'input[type="email"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="url"], textarea'
-        // ) && !element.disabled;
-        this.isTextArea = false;
 
         document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag),false);
-        document.addEventListener('dragover', ev => this.dragover(ev), false);
         document.addEventListener('dragend', ev => this.dragend(ev, superDrag), false);
     }
 
@@ -115,33 +110,15 @@ class SuperDrag {
         this._dic.startY = event.y;
     }
 
-    dragover(event) {
-        // event.dataTransfer.effectAllowed = "move";
-        // event.dataTransfer.dropEffect = "move";
-        // event.preventDefault();
-        if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
-            this.isTextArea = true;
-        } else {
-            this.isTextArea = false;
-        }
-        // if (event.dataTransfer.types.includes('text/uri-list')) {
-        //     event.preventDefault();
-        //     event.dataTransfer.dropEffect = 'link';
-        // } else if (event.dataTransfer.types.includes('text/plain')) {
-        //     if (!this.isTextArea(event.target)) {
-        //         event.preventDefault();
-        //         event.dataTransfer.dropEffect = 'link';
-        //     }
-        // }
-    }
-
     dragend(event, superDrag) {
         let time_collect;
         this._dic.stop_time = new Date().getTime();
         time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
         // console.log(superDrag.superDrag);
         // console.log(time_collect);
-        if ((superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
+        console.log(event.srcElement.localName);
+        console.log(event);
+        if (event.dataTransfer.dropEffect == "none" && (superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
             && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
             let items;
             let position_text;
@@ -258,9 +235,7 @@ class SuperDrag {
             }
             let keyword = window.getSelection().toString();
             let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-            console.log(event.srcElement.localName);
             console.log(keyword);
-            console.log(event);
             // debugger
             if (event.srcElement.localName == "a") {
                 if (event.srcElement.firstElementChild&&event.srcElement.firstElementChild.firstElementChild&&event.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
@@ -409,7 +384,7 @@ class SuperDrag {
             } else {
                 if (keyword) {
                     if (urlPattern.test(keyword)) {
-                        if (superDrag.superDrag.link_type[position_link] === 0 && !this.isTextArea) {
+                        if (superDrag.superDrag.link_type[position_link] === 0) {
                             event.preventDefault();
                             if (keyword.substr(0, 4) != 'http') {
                                 keyword = "http://" + keyword;
@@ -418,10 +393,10 @@ class SuperDrag {
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
-                        } else if ((superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) && !this.isTextArea) {
+                        } else if (superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) {
                             event.preventDefault();
                             this.copyText(keyword);
-                        } else if (superDrag.superDrag.link_type[position_link] === 3 && !this.isTextArea) {
+                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
                             event.preventDefault();
                             if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                 this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
@@ -433,7 +408,7 @@ class SuperDrag {
                             chrome.extension.sendMessage(this._dic);
                         }
                     } else {
-                        if (superDrag.superDrag.text_type[position_text] === 0 && !this.isTextArea) {
+                        if (superDrag.superDrag.text_type[position_text] === 0) {
                             event.preventDefault();
                             if (superDrag.superDrag.searchEngines[position_text].url) {
                                 this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
@@ -443,7 +418,7 @@ class SuperDrag {
                             this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.text_type[position_text] === 1 && !this.isTextArea) {
+                        } else if (superDrag.superDrag.text_type[position_text] === 1) {
                             event.preventDefault();
                             this.copyText(keyword)
                         }
@@ -457,7 +432,6 @@ class SuperDrag {
     clear_up() {
         this._dic = {};
         document.removeEventListener('dragstart', this.constructor, false);
-        document.removeEventListener('dragover', this.constructor, false);
         document.removeEventListener('dragend', this.constructor, false);
     }
 
