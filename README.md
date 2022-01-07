@@ -19,6 +19,7 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 ```
 v3.4.1
 fix bugs
+优化代码
 
 v3.4.0
 修复拖拽时有概率不触发的问题
