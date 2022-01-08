@@ -1,6 +1,6 @@
 {
 	"name" : "__MSG_name__",
-	"version" : "3.4.1",
+	"version" : "3.5.0",
 	"manifest_version" : 2,
 	"description" : "__MSG_desc__",
 	"icons" : {
@@ -14,11 +14,11 @@
 		"persistent": false
 	},
 	"content_scripts" : [{
-				"matches" : ["<all_urls>"],
-				"all_frames": true,
-				"js" : ["common.js", "superdrag.js"],
-				"run_at" : "document_start"
-			}],
+		"matches" : ["<all_urls>"],
+		"all_frames": true,
+		"js" : ["common.js", "qrcode.min.js", "superdrag.js"],
+		"run_at" : "document_start"
+	}],
 	"permissions" : ["storage", "downloads"],
 	"options_page" : "options.html"
 }

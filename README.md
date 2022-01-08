@@ -17,6 +17,10 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.5.0
+支持选中文字或链接拖拽生成二维码
+fix bugs
+
 v3.4.1
 fix bugs
 优化代码

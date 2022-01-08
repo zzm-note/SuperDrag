@@ -2,7 +2,7 @@ function _getDefault() {
 	return {
 		direction_sel : 0,
 		enableAlt : true,
-		timeout : 1000,
+		timeout : 2000,
 		firstEvent: true,
 		saveAs: false,
 		keyCode: "Escape",
@@ -29,9 +29,9 @@ function _getDefault() {
 var direction_val = ["↖ ↙ ↗ ↘", "↑ ↓ ← →"];
 var _effect_text = ["四面八方", "上下", "左右"];
 var _open_type = ["前台", "后台"];
-var _text_type = ["搜索", "复制"];
+var _text_type = ["搜索", "复制", "生成二维码"];
 var _effect_link = ["四面八方", "上下", "左右"];
-var _link_type = ["打开链接", "复制链接", "复制链接文本", "搜索链接文本"];
+var _link_type = ["打开链接", "复制链接", "复制链接文本", "搜索链接文本", "生成二维码"];
 var _effect_img = ["四面八方", "上下", "左右"];
 var _img_type = ["打开图片指向网站", "打开图片", "复制图片", "复制图片链接", "下载图片", "以图搜图"];
 

@@ -99,8 +99,11 @@ class SuperDrag {
     constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
+        this.isAltHadDown = false;
+        this.isMetaHadDown = false;
 
-        document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag),false);
+        document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag), false);
+        document.addEventListener('dragover', ev => this.dragover(ev, superDrag), false);
         document.addEventListener('dragend', ev => this.dragend(ev, superDrag), false);
     }
 
@@ -108,6 +111,15 @@ class SuperDrag {
         this._dic.start_time = new Date().getTime();
         this._dic.startX = event.x;
         this._dic.startY = event.y;
+    }
+
+    dragover(event, superDrag) {
+        if (event.altKey == true) {
+            this.isAltHadDown = true;
+        }
+        if (event.metaKey == true) {
+            this.isMetaHadDown = true;
+        }
     }
 
     dragend(event, superDrag) {
@@ -119,7 +131,7 @@ class SuperDrag {
         console.log(event.srcElement.localName);
         console.log(event);
         if (event.dataTransfer.dropEffect == "none" && (superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
-            && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!event.altKey || (this.isMac && !event.metaKey))))) {
+            && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!this.isAltHadDown || (this.isMac && !this.isMetaHadDown))))) {
             let items;
             let position_text;
             let position_link;
@@ -263,6 +275,9 @@ class SuperDrag {
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
+                        } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                            event.preventDefault();
+                            this.qrcode(event.srcElement.href);
                         }
                     } else {
                         if (superDrag.superDrag.img_type[position_img] === 0) {
@@ -330,6 +345,9 @@ class SuperDrag {
                         this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                         this._dic['flag'] = 'openTable';
                         chrome.extension.sendMessage(this._dic);
+                    } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                        event.preventDefault();
+                        this.qrcode(event.srcElement.href);
                     }
                 }
             } else if (event.srcElement.localName == 'img') {
@@ -406,6 +424,9 @@ class SuperDrag {
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
                             chrome.extension.sendMessage(this._dic);
+                        } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                            event.preventDefault();
+                            this.qrcode(keyword);
                         }
                     } else {
                         if (superDrag.superDrag.text_type[position_text] === 0) {
@@ -420,7 +441,10 @@ class SuperDrag {
                             chrome.extension.sendMessage(this._dic);
                         } else if (superDrag.superDrag.text_type[position_text] === 1) {
                             event.preventDefault();
-                            this.copyText(keyword)
+                            this.copyText(keyword);
+                        } else if (superDrag.superDrag.text_type[position_text] === 2) {
+                            event.preventDefault();
+                            this.qrcode(keyword);
                         }
                     }
                 } else {}
@@ -431,8 +455,11 @@ class SuperDrag {
 
     clear_up() {
         this._dic = {};
-        document.removeEventListener('dragstart', this.constructor, false);
-        document.removeEventListener('dragend', this.constructor, false);
+        this.isAltHadDown = false;
+        this.isMetaHadDown = false;
+        document.removeEventListener('dragstart', this.dragstart, false);
+        document.removeEventListener('dragover', this.dragover, false);
+        document.removeEventListener('dragend', this.dragend, false);
     }
 
     // toast提示信息
@@ -450,6 +477,24 @@ class SuperDrag {
                 document.body.removeChild(m)
             }, d * 1000);
         }, duration);
+    }
+
+    // 生成二维码
+    qrcode(something) {
+        var m = document.createElement('div');
+        m.id = "qrcode-super";
+        m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 99999999999;";
+        document.body.appendChild(m);
+        var side = document.documentElement.clientWidth/5
+        new QRCode("qrcode-super", {
+            text: something,
+            width: side,
+            height: side,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        document.body.addEventListener('click', () => {document.body.removeChild(m);}, {once: true});
     }
 
     // 复制文本
