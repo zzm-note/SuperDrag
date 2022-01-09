@@ -259,7 +259,7 @@ class SuperDrag {
             }
             if (this.currentDragDirection != [position_text, position_link, position_img].toString()) {
                 this.currentDragDirection = [position_text, position_link, position_img].toString();
-                let keyword = window.getSelection().toString();
+                let keyword = window.getSelection().toString().replace(/(^\s*)|(\s*$)/g, "");
                 let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
                 if (this.dragEvent.srcElement.localName == "a") {
                     if (this.dragEvent.srcElement.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
