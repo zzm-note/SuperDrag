@@ -18,6 +18,7 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 ### 更新日志：
 ```
 v3.5.0
+支持可选是否实时显示当前拖拽事件的提示框
 支持选中文字或链接拖拽生成二维码
 fix bugs
 
