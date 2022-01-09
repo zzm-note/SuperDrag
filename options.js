@@ -118,6 +118,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             _save(superDrag.superDrag);
             console.log(superDrag);
         }, false);
+    document.getElementById("showNotice").addEventListener(
+        "change", function () {
+            superDrag.superDrag.showNotice = this.checked;
+            _save(superDrag.superDrag);
+            console.log(superDrag);
+        }, false);
     document.getElementById("timeout").addEventListener(
         "change", function () {
             if(isNaN(this.value) || this.value.length === 0) {
@@ -159,6 +165,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
     document.getElementById('firstEventDesc').innerHTML = chrome.i18n.getMessage('firstEventDesc');
     document.getElementById('saveAsDesc').innerHTML = chrome.i18n.getMessage('saveAsDesc');
+    document.getElementById('showNoticeDesc').innerHTML = chrome.i18n.getMessage('showNoticeDesc');
     document.getElementById('openLinksDesc').innerHTML = chrome.i18n.getMessage('openLinksDesc');
     document.getElementById('openLinksDesc2').innerHTML = chrome.i18n.getMessage('openLinksDesc2');
     document.getElementById('openLinksDesc3').innerHTML = chrome.i18n.getMessage('openLinksDesc3');
@@ -177,6 +184,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;
+    document.getElementById("showNotice").checked = superDrag.superDrag.showNotice;
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
@@ -619,16 +627,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     function _save_text_type(_select, superDrag) {// select
         const _id = _select.getAttribute("myAttr");
         const _v = _select.options[_select.selectedIndex].value;
-        if (Number(_v) === 1) {
-            document.getElementById("open_type_" + _id).style.display = "none";
-            document.getElementById("search_engine_select_" + _id).style.display = "none";
-            document.getElementById("search_engine_url_" + _id).style.display = "none";
-        } else {
+        if (Number(_v) === 0) {
             document.getElementById("open_type_" + _id).style.display = "";
             document.getElementById("search_engine_select_" + _id).style.display = "";
             document.getElementById("search_engine_url_" + _id).style.display = "";
             document.getElementById("search_engine_url_" + _id).value = _build_in_seach_engines[_v].url;
             document.getElementById("search_engine_url_" + _id).readOnly = true;
+        } else {
+            document.getElementById("open_type_" + _id).style.display = "none";
+            document.getElementById("search_engine_select_" + _id).style.display = "none";
+            document.getElementById("search_engine_url_" + _id).style.display = "none";
         }
         _load_search_engine();
         superDrag.superDrag.text_type[_id] = Number(_v);

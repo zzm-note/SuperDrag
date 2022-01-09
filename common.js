@@ -5,6 +5,7 @@ function _getDefault() {
 		timeout : 2000,
 		firstEvent: true,
 		saveAs: false,
+		showNotice: true,
 		keyCode: "Escape",
 		openLinksOpenType: 1,
 

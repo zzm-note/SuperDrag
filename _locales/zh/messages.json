@@ -47,6 +47,9 @@
 	"saveAsDesc" : {
 		"message" : "下载图片弹出文件另存为对话框"
 	},
+	"showNoticeDesc" : {
+		"message" : "实时显示当前拖拽事件的提示框"
+	},
 	"openLinksDesc" : {
 		"message" : "按住"
 	},

@@ -99,8 +99,14 @@ class SuperDrag {
     constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
-        this.isAltHadDown = false;
-        this.isMetaHadDown = false;
+        this.handle_type = "";
+        this.dragEvent = {};
+        this.notice = "";
+        this.drginbox = false;
+        this.currentDragDirection = "";
+        this.timeout = false;
+        this.toCancel = false;
+        this.arrow = [['⇖','⇙','⇗','⇘'], ['⇑','⇓','⇐','⇒']]
 
         document.addEventListener('dragstart', ev => this.dragstart(ev, superDrag), false);
         document.addEventListener('dragover', ev => this.dragover(ev, superDrag), false);
@@ -111,27 +117,33 @@ class SuperDrag {
         this._dic.start_time = new Date().getTime();
         this._dic.startX = event.x;
         this._dic.startY = event.y;
+        this.dragEvent = event;
+        this.notice = document.createElement('div');
+        this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
+        if (superDrag.superDrag.showNotice) {
+            document.body.appendChild(this.notice);
+        }
     }
 
     dragover(event, superDrag) {
-        if (event.altKey == true) {
-            this.isAltHadDown = true;
-        }
-        if (event.metaKey == true) {
-            this.isMetaHadDown = true;
-        }
-    }
-
-    dragend(event, superDrag) {
         let time_collect;
         this._dic.stop_time = new Date().getTime();
         time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
         // console.log(superDrag.superDrag);
         // console.log(time_collect);
-        console.log(event.srcElement.localName);
-        console.log(event);
-        if (event.dataTransfer.dropEffect == "none" && (superDrag.superDrag.timeout === 0 || superDrag.superDrag.timeout > time_collect)
-            && (!superDrag.superDrag.enableAlt || (superDrag.superDrag.enableAlt && (!this.isAltHadDown || (this.isMac && !this.isMetaHadDown))))) {
+        if (superDrag.superDrag.timeout !== 0 && superDrag.superDrag.timeout < time_collect) {
+            this.timeout = true;
+        }
+        if (superDrag.superDrag.enableAlt && (event.altKey || (this.isMac && event.metaKey))) {
+            this.toCancel = true;
+        }
+        if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
+            this.drginbox = true
+        } else {
+            this.drginbox = false
+        }
+        if (!this.drginbox && !this.timeout && !this.toCancel) {
+            this.notice.style.display = "";
             let items;
             let position_text;
             let position_link;
@@ -245,28 +257,101 @@ class SuperDrag {
                     position_img = 3;
                 }
             }
-            let keyword = window.getSelection().toString();
-            let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-            console.log(keyword);
-            // debugger
-            if (event.srcElement.localName == "a") {
-                if (event.srcElement.firstElementChild&&event.srcElement.firstElementChild.firstElementChild&&event.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
-                    if (superDrag.superDrag.firstEvent) {
+            if (this.currentDragDirection != [position_text, position_link, position_img].toString()) {
+                this.currentDragDirection = [position_text, position_link, position_img].toString();
+                let keyword = window.getSelection().toString();
+                let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+                if (this.dragEvent.srcElement.localName == "a") {
+                    if (this.dragEvent.srcElement.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
+                        if (superDrag.superDrag.firstEvent) {
+                            if (superDrag.superDrag.link_type[position_link] === 3) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                            }
+                            if (superDrag.superDrag.link_type[position_link] === 0) {
+                                this._dic['url'] = this.dragEvent.srcElement.href
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.href;
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                                keyword = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.href;
+                                this.handle_type = "qrcode";
+                            }
+                        } else {
+                            if (superDrag.superDrag.img_type[position_img] === 5) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
+                            }
+                            if (superDrag.superDrag.img_type[position_img] === 0) {
+                                this._dic['url'] = this.dragEvent.srcElement.href;
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                                this._dic['url'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this.handle_type = "copyImage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                                this._dic['url'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['flag'] = 'download';
+                                this._dic['saveAs'] = superDrag.superDrag.saveAs;
+                                this.handle_type = "sendMessageDownload";
+                            } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                                keyword = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                    this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            }
+                        }
+                    } else {
+                        if (superDrag.superDrag.link_type[position_link] === 3) {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                        } else {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                        }
                         if (superDrag.superDrag.link_type[position_link] === 0) {
-                            event.preventDefault();
-                            this._dic['url'] = event.srcElement.href
+                            this._dic['url'] = this.dragEvent.srcElement.href;
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
+                            this.handle_type = "sendMessage";
                         } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                            event.preventDefault();
-                            this.copyText(event.srcElement.href);
+                            this._dic['keywords'] = this.dragEvent.srcElement.href;
+                            this.handle_type = "copyText";
                         } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                            event.preventDefault();
-                            this.copyText(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0]);
+                            this._dic['keywords'] = this.dragEvent.srcElement.innerText;
+                            this.handle_type = "copyText";
                         } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                            event.preventDefault();
-                            keyword = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                            keyword = this.dragEvent.srcElement.innerText;
                             if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                 this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                             } else {
@@ -274,189 +359,155 @@ class SuperDrag {
                             }
                             this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
                             this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
+                            this.handle_type = "sendMessage";
                         } else if (superDrag.superDrag.link_type[position_link] === 4) {
-                            event.preventDefault();
-                            this.qrcode(event.srcElement.href);
+                            this._dic['keywords'] = this.dragEvent.srcElement.href;
+                            this.handle_type = "qrcode";
                         }
+                    }
+                } else if (this.dragEvent.srcElement.localName == 'img') {
+                    if (superDrag.superDrag.img_type[position_img] === 5) {
+                        this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
                     } else {
-                        if (superDrag.superDrag.img_type[position_img] === 0) {
-                            event.preventDefault();
-                            this._dic['url'] = event.srcElement.href;
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                            event.preventDefault();
-                            this._dic['url'] = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                            event.preventDefault();
-                            this.copyImage(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0]);
-                        } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                            event.preventDefault();
-                            this.copyText(event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0])
-                        } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                            event.preventDefault();
-                            this._dic['url'] = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
-                            this._dic['flag'] = 'download';
-                            try {
-                                chrome.extension.sendMessage(this._dic);
-                                SuperDrag.toast("下载图片，处理中……");
-                            } catch (err) {
-                                SuperDrag.toast("下载图片失败:" + err.message);
+                        this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
+                    }
+                    if (superDrag.superDrag.img_type[position_img] === 0) {
+                        for(let value of this.dragEvent.path){
+                            if (value.localName == 'img') {
+                                this._dic['url'] = value.currentSrc.split("?")[0];
+                            } else if (value.localName == 'a') {
+                                this._dic['url'] = value.href;
+                                break;
                             }
-                        } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                            event.preventDefault();
-                            keyword = event.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
-                            if (superDrag.superDrag.imgSearchEngines[position_img].url) {
-                                this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            } else {
-                                this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            }
-                            this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
                         }
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        this.handle_type = "sendMessage";
+                    } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                        this._dic['url'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        this.handle_type = "sendMessage";
+                    } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this.handle_type = "copyImage";
+                    } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this.handle_type = "copyText";
+                    } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                        this._dic['url'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['flag'] = 'download';
+                        this._dic['saveAs'] = superDrag.superDrag.saveAs;
+                        this.handle_type = "sendMessageDownload";
+                    } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                        keyword = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                            this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        } else {
+                            this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                        }
+                        this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                        this._dic['flag'] = 'openTable';
+                        this.handle_type = "sendMessage";
                     }
                 } else {
-                    if (superDrag.superDrag.link_type[position_link] === 0) {
-                        event.preventDefault();
-                        this._dic['url'] = event.srcElement.href;
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if (superDrag.superDrag.link_type[position_link] === 1) {
-                        event.preventDefault();
-                        this.copyText(event.srcElement.href);
-                    } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                        event.preventDefault();
-                        this.copyText(event.srcElement.innerText);
-                    } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                        event.preventDefault();
-                        keyword = event.srcElement.innerText;
-                        if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                            this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    if (keyword) {
+                        if (urlPattern.test(keyword)) {
+                            if (superDrag.superDrag.link_type[position_link] === 3) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                            }
+                            if (superDrag.superDrag.link_type[position_link] === 0) {
+                                if (keyword.substr(0, 4) != 'http') {
+                                    keyword = "http://" + keyword;
+                                }
+                                this._dic['url'] = keyword;
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) {
+                                this._dic['keywords'] = keyword;
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                                this._dic['keywords'] = keyword;
+                                this.handle_type = "qrcode";
+                            }
                         } else {
-                            this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                        }
-                        this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                        this._dic['flag'] = 'openTable';
-                        chrome.extension.sendMessage(this._dic);
-                    } else if (superDrag.superDrag.link_type[position_link] === 4) {
-                        event.preventDefault();
-                        this.qrcode(event.srcElement.href);
-                    }
-                }
-            } else if (event.srcElement.localName == 'img') {
-                if (superDrag.superDrag.img_type[position_img] === 0) {
-                    event.preventDefault();
-                    for(let value of event.path){
-                        if (value.localName == 'img') {
-                            this._dic['url'] = value.currentSrc.split("?")[0];
-                        } else if (value.localName == 'a') {
-                            this._dic['url'] = value.href;
-                            break;
-                        }
-                    }
-                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                    this._dic['flag'] = 'openTable';
-                    chrome.extension.sendMessage(this._dic);
-                } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                    event.preventDefault();
-                    this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
-                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                    this._dic['flag'] = 'openTable';
-                    chrome.extension.sendMessage(this._dic);
-                } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                    event.preventDefault();
-                    this.copyImage(event.srcElement.currentSrc.split("?")[0]);
-                } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                    event.preventDefault();
-                    this.copyText(event.srcElement.currentSrc.split("?")[0])
-                } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                    event.preventDefault();
-                    this._dic['url'] = event.srcElement.currentSrc.split("?")[0];
-                    this._dic['flag'] = 'download';
-                    this._dic['saveAs'] = superDrag.superDrag.saveAs;
-                    try {
-                        chrome.extension.sendMessage(this._dic);
-                        SuperDrag.toast("下载图片，处理中……");
-                    } catch (err) {
-                        SuperDrag.toast("下载图片失败:" + err.message);
-                    }
-                } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                    event.preventDefault();
-                    keyword = event.srcElement.currentSrc.split("?")[0];
-                    if (superDrag.superDrag.imgSearchEngines[position_img].url) {
-                        this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
-                    } else {
-                        this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                    }
-                    this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
-                    this._dic['flag'] = 'openTable';
-                    chrome.extension.sendMessage(this._dic);
-                }
-            } else {
-                if (keyword) {
-                    if (urlPattern.test(keyword)) {
-                        if (superDrag.superDrag.link_type[position_link] === 0) {
-                            event.preventDefault();
-                            if (keyword.substr(0, 4) != 'http') {
-                                keyword = "http://" + keyword;
-                            }
-                            this._dic['url'] = keyword;
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) {
-                            event.preventDefault();
-                            this.copyText(keyword);
-                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                            event.preventDefault();
-                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            if (superDrag.superDrag.text_type[position_text] === 0) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].name;
                             } else {
-                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]];
                             }
-                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.link_type[position_link] === 4) {
-                            event.preventDefault();
-                            this.qrcode(keyword);
+                            if (superDrag.superDrag.text_type[position_text] === 0) {
+                                if (superDrag.superDrag.searchEngines[position_text].url) {
+                                    this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.text_type[position_text] === 1) {
+                                this._dic['keywords'] = keyword;
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.text_type[position_text] === 2) {
+                                this._dic['keywords'] = keyword;
+                                this.handle_type = "qrcode";
+                            }
                         }
                     } else {
-                        if (superDrag.superDrag.text_type[position_text] === 0) {
-                            event.preventDefault();
-                            if (superDrag.superDrag.searchEngines[position_text].url) {
-                                this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            } else {
-                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                            }
-                            this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
-                            this._dic['flag'] = 'openTable';
-                            chrome.extension.sendMessage(this._dic);
-                        } else if (superDrag.superDrag.text_type[position_text] === 1) {
-                            event.preventDefault();
-                            this.copyText(keyword);
-                        } else if (superDrag.superDrag.text_type[position_text] === 2) {
-                            event.preventDefault();
-                            this.qrcode(keyword);
-                        }
+                        this.notice.innerHTML = "Some mistakes have occurred.";
                     }
-                } else {}
+                }
+            }
+        } else {
+            this.notice.style.display = "none";
+        }
+    }
+
+    dragend(event, superDrag) {
+        if (!this.timeout && !this.toCancel && this.dragEvent.dataTransfer.dropEffect == "none") {
+            if (this.handle_type == "sendMessage") {
+                chrome.extension.sendMessage(this._dic);
+            } else if (this.handle_type == "copyText") {
+                this.copyText(this._dic['keywords'])
+            } else if (this.handle_type == "copyImage") {
+                this.copyImage(this._dic['keywords'])
+            } else if (this.handle_type == "qrcode") {
+                this.qrcode(this._dic['keywords'])
+            } else if (this.handle_type == "sendMessageDownload") {
+                try {
+                    chrome.extension.sendMessage(this._dic);
+                    SuperDrag.toast("下载图片，处理中……");
+                } catch (err) {
+                    SuperDrag.toast("下载图片失败:" + err.message);
+                }
             }
         }
         this.clear_up();
+        if (superDrag.superDrag.showNotice) {
+            document.body.removeChild(this.notice);
+        }
     }
 
     clear_up() {
         this._dic = {};
-        this.isAltHadDown = false;
-        this.isMetaHadDown = false;
+        this.handle_type = "";
+        this.dragEvent = {};
+        this.drginbox = false;
+        this.currentDragDirection = "";
+        this.timeout = false;
+        this.toCancel = false;
         document.removeEventListener('dragstart', this.dragstart, false);
         document.removeEventListener('dragover', this.dragover, false);
         document.removeEventListener('dragend', this.dragend, false);
