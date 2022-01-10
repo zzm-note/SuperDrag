@@ -104,7 +104,6 @@ class SuperDrag {
         this.notice = "";
         this.drginbox = false;
         this.currentDragDirection = "";
-        this.timeout = false;
         this.toCancel = false;
         this.arrow = [['⇖','⇙','⇗','⇘'], ['⇑','⇓','⇐','⇒']]
 
@@ -119,6 +118,7 @@ class SuperDrag {
         this._dic.startY = event.y;
         this.dragEvent = event;
         this.notice = document.createElement('div');
+        this.notice.id = "notice-superDrag" + this._dic.start_time;
         this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
         if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
             document.body.appendChild(this.notice);
@@ -132,7 +132,7 @@ class SuperDrag {
         // console.log(superDrag.superDrag);
         // console.log(time_collect);
         if (superDrag.superDrag.timeout !== 0 && superDrag.superDrag.timeout < time_collect) {
-            this.timeout = true;
+            this._dic.timeout = true;
         }
         if (superDrag.superDrag.enableAlt && (event.altKey || (this.isMac && event.metaKey))) {
             this.toCancel = true;
@@ -142,7 +142,7 @@ class SuperDrag {
         } else {
             this.drginbox = false
         }
-        if (!this.drginbox && !this.timeout && !this.toCancel) {
+        if (!this.drginbox && !this._dic.timeout && !this.toCancel) {
             this.notice.style.display = "";
             let items;
             let position_text;
@@ -476,7 +476,7 @@ class SuperDrag {
     }
 
     dragend(event, superDrag) {
-        if (!this.timeout && !this.toCancel && this.dragEvent.dataTransfer.dropEffect == "none") {
+        if (!this._dic.timeout && !this.toCancel && this.dragEvent.dataTransfer.dropEffect == "none") {
             if (this.handle_type == "sendMessage") {
                 chrome.extension.sendMessage(this._dic);
             } else if (this.handle_type == "copyText") {
@@ -494,10 +494,10 @@ class SuperDrag {
                 }
             }
         }
-        this.clear_up();
-        if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
+        if (document.getElementById("notice-superDrag" + this._dic.start_time) != null) {
             document.body.removeChild(this.notice);
         }
+        this.clear_up();
     }
 
     clear_up() {
@@ -506,7 +506,6 @@ class SuperDrag {
         this.dragEvent = {};
         this.drginbox = false;
         this.currentDragDirection = "";
-        this.timeout = false;
         this.toCancel = false;
         document.removeEventListener('dragstart', this.dragstart, false);
         document.removeEventListener('dragover', this.dragover, false);
@@ -533,7 +532,7 @@ class SuperDrag {
     // 生成二维码
     qrcode(something) {
         var m = document.createElement('div');
-        m.id = "qrcode-super";
+        m.id = "qrcode-super" + new Date().getTime();
         m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 99999999999;";
         document.body.appendChild(m);
         var side = document.documentElement.clientWidth/5
