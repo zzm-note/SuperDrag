@@ -120,7 +120,7 @@ class SuperDrag {
         this.dragEvent = event;
         this.notice = document.createElement('div');
         this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
-        if (superDrag.superDrag.showNotice) {
+        if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
             document.body.appendChild(this.notice);
         }
     }
@@ -495,7 +495,7 @@ class SuperDrag {
             }
         }
         this.clear_up();
-        if (superDrag.superDrag.showNotice) {
+        if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
             document.body.removeChild(this.notice);
         }
     }
