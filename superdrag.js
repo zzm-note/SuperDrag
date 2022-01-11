@@ -532,11 +532,11 @@ class SuperDrag {
     // 生成二维码
     qrcode(something) {
         var m = document.createElement('div');
-        m.id = "qrcode-super" + new Date().getTime();
+        m.id = "qrcode-superDrag" + new Date().getTime();
         m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 99999999999;";
         document.body.appendChild(m);
         var side = document.documentElement.clientWidth/5
-        new QRCode("qrcode-super", {
+        new QRCode(m, {
             text: something,
             width: side,
             height: side,
