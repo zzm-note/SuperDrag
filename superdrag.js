@@ -118,7 +118,6 @@ class SuperDrag {
         this._dic.startY = event.y;
         this.dragEvent = event;
         this.notice = document.createElement('div');
-        this.notice.id = "notice-superDrag" + this._dic.start_time;
         this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
         if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
             document.body.appendChild(this.notice);
@@ -478,7 +477,7 @@ class SuperDrag {
     dragend(event, superDrag) {
         if (!this._dic.timeout && !this.toCancel && this.dragEvent.dataTransfer.dropEffect == "none") {
             if (this.handle_type == "sendMessage") {
-                chrome.extension.sendMessage(this._dic);
+                chrome.runtime.sendMessage(this._dic);
             } else if (this.handle_type == "copyText") {
                 this.copyText(this._dic['keywords'])
             } else if (this.handle_type == "copyImage") {
@@ -487,14 +486,14 @@ class SuperDrag {
                 this.qrcode(this._dic['keywords'])
             } else if (this.handle_type == "sendMessageDownload") {
                 try {
-                    chrome.extension.sendMessage(this._dic);
+                    chrome.runtime.sendMessage(this._dic);
                     SuperDrag.toast("下载图片，处理中……");
                 } catch (err) {
                     SuperDrag.toast("下载图片失败:" + err.message);
                 }
             }
         }
-        if (document.getElementById("notice-superDrag" + this._dic.start_time) != null) {
+        if (this.notice != "") {
             document.body.removeChild(this.notice);
         }
         this.clear_up();
@@ -507,6 +506,7 @@ class SuperDrag {
         this.drginbox = false;
         this.currentDragDirection = "";
         this.toCancel = false;
+        this.notice = "";
         document.removeEventListener('dragstart', this.dragstart, false);
         document.removeEventListener('dragover', this.dragover, false);
         document.removeEventListener('dragend', this.dragend, false);
@@ -531,9 +531,11 @@ class SuperDrag {
 
     // 生成二维码
     qrcode(something) {
+        var n = document.createElement('div');
+        n.style.cssText = "position: absolute;left: 0%;top: 0%;width: 100%;height: 100%;z-index: 2147483646;filter: opacity(0.8);background-color: slategray;";
+        document.body.appendChild(n);
         var m = document.createElement('div');
-        m.id = "qrcode-superDrag" + new Date().getTime();
-        m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 99999999999;";
+        m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 2147483647;";
         document.body.appendChild(m);
         var side = document.documentElement.clientWidth/5
         new QRCode(m, {
@@ -544,7 +546,7 @@ class SuperDrag {
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
-        document.body.addEventListener('click', () => {document.body.removeChild(m);}, {once: true});
+        document.body.addEventListener('click', () => {document.body.removeChild(m);document.body.removeChild(n);}, {once: true});
     }
 
     // 复制文本
@@ -690,7 +692,7 @@ class OpenLinks {
         _dic['url'] = this.open_links;
         _dic['active'] = this.setting.superDrag.openLinksOpenType == 0;
         _dic['flag'] = 'openTable';
-        chrome.extension.sendMessage(_dic);
+        chrome.runtime.sendMessage(_dic);
 
         this.highlight_link();
         this.clear_up();

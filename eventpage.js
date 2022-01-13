@@ -1,6 +1,6 @@
-chrome.extension.onMessage.addListener(message => {
+chrome.runtime.onMessage.addListener(message => {
   if (message['flag'] == 'openTable') {
-    chrome.tabs.getAllInWindow(tabs => {
+    chrome.tabs.query({}, tabs => {
       // console.log(tabs)
       // console.log(message);
       if (typeof message['url'] == "string") {

@@ -1,7 +1,7 @@
 {
 	"name" : "__MSG_name__",
-	"version" : "3.5.0",
-	"manifest_version" : 2,
+	"version" : "3.6.0",
+	"manifest_version" : 3,
 	"description" : "__MSG_desc__",
 	"icons" : {
 		"16" : "img/icon16.png",
@@ -10,8 +10,7 @@
 	},
 	"default_locale" : "zh",
 	"background" : {
-		"scripts": ["eventpage.js"],
-		"persistent": false
+		"service_worker": "eventpage.js"
 	},
 	"content_scripts" : [{
 		"matches" : ["<all_urls>"],
