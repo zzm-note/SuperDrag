@@ -550,13 +550,15 @@ class SuperDrag {
 
     // 生成二维码
     qrcode(something) {
+        var width_n = document.body.scrollWidth
+        var height_n = document.body.scrollHeight
         var n = document.createElement('div');
-        n.style.cssText = "position: absolute;left: 0%;top: 0%;width: 100%;height: 100%;z-index: 2147483646;filter: opacity(0.8);background-color: slategray;";
+        n.style.cssText = "position: absolute;left: 0%;top: 0%;width: " + width_n + "px;height: " + height_n + "px;z-index: 2147483646;filter: opacity(0.8);background-color: slategray;";
         document.body.appendChild(n);
         var m = document.createElement('div');
         m.style.cssText = "position: fixed;top: 5%;right: 5%;z-index: 2147483647;";
         document.body.appendChild(m);
-        var side = document.documentElement.clientWidth/5
+        var side = document.body.clientWidth/5
         new QRCode(m, {
             text: something,
             width: side,
