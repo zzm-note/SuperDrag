@@ -263,8 +263,8 @@ class SuperDrag {
                 let keyword = window.getSelection().toString().replace(/(^\s*)|(\s*$)/g, "");
                 let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
                 if (this.dragEvent.srcElement.localName == "a") {
-                    if (this.containsImg === null) {
-                        this.containsImg = this.findImg(this.dragEvent.srcElement.childNodes);
+                    if (!this.containsImg) {
+                        this.findImg(this.dragEvent.srcElement.childNodes);
                     }
                     if (this.containsImg) { //如果链接包含图片
                         if (superDrag.superDrag.firstEvent) {
@@ -522,13 +522,15 @@ class SuperDrag {
     findImg(treeNode){ //遍历树  获取判断是否存在图片
         for (let ele of treeNode) {
             if (ele.nodeName.toLowerCase() == 'img') {
-                return ele.currentSrc
+                this.containsImg = ele.currentSrc;
+                break;
             }
             if (ele.childNodes.length > 0) {
                 return this.findImg(ele.childNodes);
+                if (this.containsImg) {return;}
             }
         }
-        return false
+        return;
     }
 
     // toast提示信息
