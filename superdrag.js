@@ -526,7 +526,7 @@ class SuperDrag {
                 break;
             }
             if (ele.childNodes.length > 0) {
-                return this.findImg(ele.childNodes);
+                this.findImg(ele.childNodes);
                 if (this.containsImg) {return;}
             }
         }
