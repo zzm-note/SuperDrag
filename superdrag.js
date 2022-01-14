@@ -99,11 +99,12 @@ class SuperDrag {
     constructor(superDrag) {
         this.isMac = (navigator.platform == "Mac68K") || (navigator.platform == "MacPPC") || (navigator.platform == "Macintosh") || (navigator.platform == "MacIntel");
         this._dic = {};
-        this.handle_type = "";
-        this.dragEvent = {};
-        this.notice = "";
-        this.drginbox = false;
-        this.currentDragDirection = "";
+        this.handle_type = null;
+        this.dragEvent = null;
+        this.notice = null;
+        this.containsImg = null;
+        this.dragInBox = false;
+        this.currentDragDirection = null;
         this.toCancel = false;
         this.arrow = [['⇖','⇙','⇗','⇘'], ['⇑','⇓','⇐','⇒']]
 
@@ -138,11 +139,11 @@ class SuperDrag {
             this.toCancel = true;
         }
         if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
-            this.drginbox = true
+            this.dragInBox = true
         } else {
-            this.drginbox = false
+            this.dragInBox = false
         }
-        if (!this.drginbox && !this._dic.timeout && !this.toCancel) {
+        if (!this.dragInBox && !this._dic.timeout && !this.toCancel) {
             this.notice.style.display = "";
             let items;
             let position_text;
@@ -262,7 +263,10 @@ class SuperDrag {
                 let keyword = window.getSelection().toString().replace(/(^\s*)|(\s*$)/g, "");
                 let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
                 if (this.dragEvent.srcElement.localName == "a") {
-                    if (this.dragEvent.srcElement.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild&&this.dragEvent.srcElement.firstElementChild.firstElementChild.localName == 'img') { //如果链接包含图片
+                    if (this.containsImg === null) {
+                        this.containsImg = this.findImg(this.dragEvent.srcElement.childNodes);
+                    }
+                    if (this.containsImg) { //如果链接包含图片
                         if (superDrag.superDrag.firstEvent) {
                             if (superDrag.superDrag.link_type[position_link] === 3) {
                                 this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
@@ -278,10 +282,10 @@ class SuperDrag {
                                 this._dic['keywords'] = this.dragEvent.srcElement.href;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['keywords'] = this.containsImg.split("?")[0];
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                keyword = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                keyword = this.containsImg.split("?")[0];
                                 if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                     this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
@@ -306,23 +310,23 @@ class SuperDrag {
                                 this._dic['flag'] = 'openTable';
                                 this.handle_type = "sendMessage";
                             } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                                this._dic['url'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['url'] = this.containsImg.split("?")[0];
                                 this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                                 this._dic['flag'] = 'openTable';
                                 this.handle_type = "sendMessage";
                             } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['keywords'] = this.containsImg.split("?")[0];
                                 this.handle_type = "copyImage";
                             } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                                this._dic['keywords'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['keywords'] = this.containsImg.split("?")[0];
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                                this._dic['url'] = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                this._dic['url'] = this.containsImg.split("?")[0];
                                 this._dic['flag'] = 'download';
                                 this._dic['saveAs'] = superDrag.superDrag.saveAs;
                                 this.handle_type = "sendMessageDownload";
                             } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                                keyword = this.dragEvent.srcElement.firstElementChild.firstElementChild.currentSrc.split("?")[0];
+                                keyword = this.containsImg.split("?")[0];
                                 if (superDrag.superDrag.imgSearchEngines[position_img].url) {
                                     this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
@@ -374,7 +378,7 @@ class SuperDrag {
                     if (superDrag.superDrag.img_type[position_img] === 0) {
                         for(let value of this.dragEvent.path){
                             if (value.localName == 'img') {
-                                this._dic['url'] = value.currentSrc.split("?")[0];
+                                this._dic['url'] = value.currentSrc;
                             } else if (value.localName == 'a') {
                                 this._dic['url'] = value.href;
                                 break;
@@ -384,23 +388,23 @@ class SuperDrag {
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
                     } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                        this._dic['url'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['url'] = this.dragEvent.srcElement.currentSrc;
                         this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
                     } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc;
                         this.handle_type = "copyImage";
                     } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['keywords'] = this.dragEvent.srcElement.currentSrc;
                         this.handle_type = "copyText";
                     } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                        this._dic['url'] = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        this._dic['url'] = this.dragEvent.srcElement.currentSrc;
                         this._dic['flag'] = 'download';
                         this._dic['saveAs'] = superDrag.superDrag.saveAs;
                         this.handle_type = "sendMessageDownload";
                     } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                        keyword = this.dragEvent.srcElement.currentSrc.split("?")[0];
+                        keyword = this.dragEvent.srcElement.currentSrc;
                         if (superDrag.superDrag.imgSearchEngines[position_img].url) {
                             this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
                         } else {
@@ -502,15 +506,29 @@ class SuperDrag {
 
     clear_up() {
         this._dic = {};
-        this.handle_type = "";
-        this.dragEvent = {};
-        this.drginbox = false;
-        this.currentDragDirection = "";
+        this.handle_type = null;
+        this.dragEvent = null;
+        this.dragInBox = false;
+        this.currentDragDirection = null;
         this.toCancel = false;
-        this.notice = "";
+        this.notice = null;
+        this.containsImg = null;
         document.removeEventListener('dragstart', this.dragstart, false);
         document.removeEventListener('dragover', this.dragover, false);
         document.removeEventListener('dragend', this.dragend, false);
+    }
+
+    // 遍历节点
+    findImg(treeNode){ //遍历树  获取判断是否存在图片
+        for (let ele of treeNode) {
+            if (ele.nodeName.toLowerCase() == 'img') {
+                return ele.currentSrc
+            }
+            if (ele.childNodes.length > 0) {
+                return this.findImg(ele.childNodes);
+            }
+        }
+        return false
     }
 
     // toast提示信息

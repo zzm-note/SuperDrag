@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(message => {
   if (message['flag'] == 'openTable') {
-    chrome.tabs.query({}, tabs => {
+    chrome.tabs.query({currentWindow: true}, tabs => {
       // console.log(tabs)
       // console.log(message);
       if (typeof message['url'] == "string") {
