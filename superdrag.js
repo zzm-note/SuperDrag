@@ -286,10 +286,18 @@ class SuperDrag {
                                 this._dic['keywords'] = this.dragEvent.srcElement.href;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                                this._dic['keywords'] = this.containsImg.split("?")[0];
+                                if (this.containsImg.alt) {
+                                    this._dic['keywords'] = this.containsImg.alt
+                                } else {
+                                    this._dic['keywords'] = this.containsImg.currentSrc;
+                                }
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                keyword = this.containsImg.split("?")[0];
+                                if (this.containsImg.alt) {
+                                    keyword = this.containsImg.alt
+                                } else {
+                                    keyword = this.containsImg.currentSrc;
+                                }
                                 if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                     this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
@@ -318,23 +326,23 @@ class SuperDrag {
                                 this._dic['flag'] = 'openTable';
                                 this.handle_type = "sendMessage";
                             } else if (superDrag.superDrag.img_type[position_img] === 1) {
-                                this._dic['url'] = this.containsImg.split("?")[0];
+                                this._dic['url'] = this.containsImg.currentSrc;
                                 this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                                 this._dic['flag'] = 'openTable';
                                 this.handle_type = "sendMessage";
                             } else if (superDrag.superDrag.img_type[position_img] === 2) {
-                                this._dic['keywords'] = this.containsImg.split("?")[0];
+                                this._dic['keywords'] = this.containsImg.currentSrc;
                                 this.handle_type = "copyImage";
                             } else if (superDrag.superDrag.img_type[position_img] === 3) {
-                                this._dic['keywords'] = this.containsImg.split("?")[0];
+                                this._dic['keywords'] = this.containsImg.currentSrc;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.img_type[position_img] === 4) {
-                                this._dic['url'] = this.containsImg.split("?")[0];
+                                this._dic['url'] = this.containsImg.currentSrc;
                                 this._dic['flag'] = 'download';
                                 this._dic['saveAs'] = superDrag.superDrag.saveAs;
                                 this.handle_type = "sendMessageDownload";
                             } else if (superDrag.superDrag.img_type[position_img] === 5) {
-                                keyword = this.containsImg.split("?")[0];
+                                keyword = this.containsImg.currentSrc;
                                 if (superDrag.superDrag.imgSearchEngines[position_img].url) {
                                     this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
@@ -546,7 +554,7 @@ class SuperDrag {
     findImg(treeNode){ //遍历树  获取判断是否存在图片
         for (let ele of treeNode) {
             if (ele.nodeName.toLowerCase() == 'img') {
-                this.containsImg = ele.currentSrc;
+                this.containsImg = ele;
                 break;
             }
             if (ele.childNodes.length > 0) {
