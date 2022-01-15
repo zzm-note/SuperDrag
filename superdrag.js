@@ -269,7 +269,11 @@ class SuperDrag {
                     if (this.containsImg) { //如果链接包含图片
                         if (superDrag.superDrag.firstEvent) {
                             if (superDrag.superDrag.link_type[position_link] === 3) {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                                }
                             } else {
                                 this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
                             }
@@ -300,7 +304,11 @@ class SuperDrag {
                             }
                         } else {
                             if (superDrag.superDrag.img_type[position_img] === 5) {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                                }
                             } else {
                                 this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
                             }
@@ -339,7 +347,11 @@ class SuperDrag {
                         }
                     } else {
                         if (superDrag.superDrag.link_type[position_link] === 3) {
-                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            }
                         } else {
                             this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
                         }
@@ -371,7 +383,11 @@ class SuperDrag {
                     }
                 } else if (this.dragEvent.srcElement.localName == 'img') {
                     if (superDrag.superDrag.img_type[position_img] === 5) {
-                        this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                        if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + chrome.i18n.getMessage("custom_search");
+                        } else {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                        }
                     } else {
                         this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
                     }
@@ -418,7 +434,11 @@ class SuperDrag {
                     if (keyword) {
                         if (urlPattern.test(keyword)) {
                             if (superDrag.superDrag.link_type[position_link] === 3) {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                                }
                             } else {
                                 this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
                             }
@@ -448,7 +468,11 @@ class SuperDrag {
                             }
                         } else {
                             if (superDrag.superDrag.text_type[position_text] === 0) {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].name;
+                                if (superDrag.superDrag.searchEngines[position_text].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].name;
+                                }
                             } else {
                                 this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]];
                             }
