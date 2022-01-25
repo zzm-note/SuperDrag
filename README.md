@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.6.1
+修复bug
+
 v3.6.0
 支持Manifest V3
 生成二维码的同时网页添加一个半透明遮罩，在暗色网页更易于扫描识别

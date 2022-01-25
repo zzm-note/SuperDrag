@@ -118,15 +118,17 @@ class SuperDrag {
         this._dic.startX = event.x;
         this._dic.startY = event.y;
         this.dragEvent = event;
-        this.notice = document.createElement('div');
-        this.notice.id = "notice-superDrag" + this._dic.start_time;
-        this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
-        if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
-            document.body.appendChild(this.notice);
-        }
     }
 
     dragover(event, superDrag) {
+        if (!this.notice) {
+            this.notice = document.createElement('div');
+            this.notice.id = "notice-superDrag" + this._dic.start_time;
+            this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
+            if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
+                document.body.appendChild(this.notice);
+            }
+        }
         let time_collect;
         this._dic.stop_time = new Date().getTime();
         time_collect = parseInt(this._dic.stop_time - this._dic.start_time);
@@ -141,6 +143,8 @@ class SuperDrag {
         if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
             this.dragInBox = true
         } else {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'link';
             this.dragInBox = false
         }
         if (!this.dragInBox && !this._dic.timeout && !this.toCancel) {
@@ -512,7 +516,7 @@ class SuperDrag {
     }
 
     dragend(event, superDrag) {
-        if (!this._dic.timeout && !this.toCancel && this.dragEvent.dataTransfer.dropEffect == "none") {
+        if (!this._dic.timeout && !this.toCancel && ["link", "none"].indexOf(this.dragEvent.dataTransfer.dropEffect) != -1) {
             if (this.handle_type == "sendMessage") {
                 chrome.runtime.sendMessage(this._dic);
             } else if (this.handle_type == "copyText") {
