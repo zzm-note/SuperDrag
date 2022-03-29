@@ -18,7 +18,6 @@ function _getDefault() {
 		open_type_link : [0, 1, 0, 1],
 		link_type : [1, 3, 0, 0],
 		linkSearchEngines : [0, 0, 0, 0],
-		linkTextSelect : false,
 
 		effect_img : 0,
 		open_type_img : [0, 1, 0, 1],

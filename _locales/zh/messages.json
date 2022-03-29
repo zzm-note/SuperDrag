@@ -17,9 +17,6 @@
 	"custom_search" : {
 		"message" : "『自定义』..."
 	},
-	"enableLinkTextSelect" : {
-		"message" : "水平拖动用以选择链接文本"
-	},
 	"searchUrlDescription" : {
 		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
 	},

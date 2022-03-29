@@ -17,6 +17,10 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.6.2
+修复设置页面显示空白的问题
+删掉一些无用的代码
+
 v3.6.1
 修复bug
 

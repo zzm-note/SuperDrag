@@ -95,11 +95,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                 _add_img_search_engine(this, superDrag);
             }, false);
     }
-    document.getElementById("enable_link_text_select").addEventListener(
-        "change", function () {
-            superDrag.superDrag.linkTextSelect = this.checked;
-            _save(superDrag.superDrag);
-        }, false);
     document.getElementById("enableAlt").addEventListener(
         "change", function () {
             superDrag.superDrag.enableAlt = this.checked;
@@ -176,11 +171,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
     document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
     document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
-    document.getElementById('enableLinkTextSelect').innerHTML = chrome.i18n.getMessage('enableLinkTextSelect');
     document.getElementById('searchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('linkSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('imgSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
-    document.getElementById("enable_link_text_select").checked = superDrag.superDrag.linkTextSelect;
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;
@@ -300,7 +293,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("link_" + i).style.display = "none";
             }
-            document.getElementById("linkTextSelect").style.display = "none";
 
             document.getElementById("link_up").innerHTML = arrow[1][0];
             document.getElementById("link_down").innerHTML = arrow[1][1];
@@ -311,7 +303,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [2, 3]) {
                 document.getElementById("link_" + i).style.display = "";
             }
-            document.getElementById("linkTextSelect").style.display = "none";
 
             document.getElementById("link_left").innerHTML = arrow[1][2];
             document.getElementById("link_right").innerHTML = arrow[1][3];
@@ -319,7 +310,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (i of [0, 1, 2, 3]) {
                 document.getElementById("link_" + i).style.display = "";
             }
-            document.getElementById("linkTextSelect").style.display = "none";
 
             document.getElementById("link_up").innerHTML = arrow[superDrag.superDrag.direction_sel][0];
             document.getElementById("link_down").innerHTML = arrow[superDrag.superDrag.direction_sel][1];
