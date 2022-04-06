@@ -17,6 +17,10 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.7.0
+Before：某些链接无法拖拽
+After：理论上鼠标放到链接上浏览器左下角能显示链接的都能拖拽了
+
 v3.6.2
 修复设置页面显示空白的问题
 删掉一些无用的代码
