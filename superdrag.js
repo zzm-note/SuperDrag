@@ -93,6 +93,40 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     // }
     new SuperDrag(superDrag);
     new OpenLinks(superDrag);
+
+    // 修改链接draggable属性
+    link_draggable = function () {
+        for (let link of document.links) {
+            if (link.draggable === false) {
+                link.draggable = true;
+            }
+            for (let sub_link of link.childNodes) {
+                if (sub_link.draggable === false) {
+                    sub_link.draggable = true;
+                }
+            }
+        }
+    }
+
+    // document.ready方法实现
+    if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.removeEventListener('DOMContentLoaded', arguments.callee, false);
+            link_draggable();
+        }, false)
+    } else if (document.attachEvent) {  // 兼容IE
+        document.attachEvent('onreadystatechange', function () {
+            if (document.readyState == "complete") {
+                document.detachEvent("onreadystatechange", arguments.callee);
+                link_draggable();
+            }
+        })
+    } else if (document.lastChild == document.body) {
+        link_draggable();
+    }
+    window.onscroll = function() {  //监听滚动事件
+        link_draggable()
+    }
 })
 
 class SuperDrag {
@@ -125,7 +159,7 @@ class SuperDrag {
             this.notice = document.createElement('div');
             this.notice.id = "notice-superDrag" + this._dic.start_time;
             this.notice.style.cssText = "font-family:siyuan;max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 90%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
-            if (superDrag.superDrag.showNotice && ["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1) {
+            if (superDrag.superDrag.showNotice && (["A", "IMG", "#text"].indexOf(this.dragEvent.srcElement.nodeName) != -1 || ["A"].indexOf(this.dragEvent.srcElement.parentNode.nodeName) != -1)) {
                 document.body.appendChild(this.notice);
             }
         }
@@ -441,6 +475,133 @@ class SuperDrag {
                         this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
+                    }
+                } else if (["A"].indexOf(this.dragEvent.srcElement.parentNode.nodeName) != -1) {
+                    if (!this.containsImg) {
+                        this.findImg(this.dragEvent.srcElement.parentNode.childNodes);
+                    }
+                    if (this.containsImg) { //如果链接包含图片
+                        if (superDrag.superDrag.firstEvent) {
+                            if (superDrag.superDrag.link_type[position_link] === 3) {
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                                }
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                            }
+                            if (superDrag.superDrag.link_type[position_link] === 0) {
+                                this._dic['url'] = this.dragEvent.srcElement.parentNode.href
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.parentNode.href;
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                                if (this.containsImg.alt) {
+                                    this._dic['keywords'] = this.containsImg.alt
+                                } else {
+                                    this._dic['keywords'] = this.containsImg.currentSrc;
+                                }
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                                if (this.containsImg.alt) {
+                                    keyword = this.containsImg.alt
+                                } else {
+                                    keyword = this.containsImg.currentSrc;
+                                }
+                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                    this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                                this._dic['keywords'] = this.dragEvent.srcElement.parentNode.href;
+                                this.handle_type = "qrcode";
+                            }
+                        } else {
+                            if (superDrag.superDrag.img_type[position_img] === 5) {
+                                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + chrome.i18n.getMessage("custom_search");
+                                } else {
+                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]] + " - " + _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].name;
+                                }
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
+                            }
+                            if (superDrag.superDrag.img_type[position_img] === 0) {
+                                this._dic['url'] = this.dragEvent.srcElement.parentNode.href;
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                                this._dic['url'] = this.containsImg.currentSrc;
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                                this._dic['keywords'] = this.containsImg.currentSrc;
+                                this.handle_type = "copyImage";
+                            } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                                this._dic['keywords'] = this.containsImg.currentSrc;
+                                this.handle_type = "copyText";
+                            } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                                this._dic['url'] = this.containsImg.currentSrc;
+                                this._dic['flag'] = 'download';
+                                this._dic['saveAs'] = superDrag.superDrag.saveAs;
+                                this.handle_type = "sendMessageDownload";
+                            } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                                keyword = this.containsImg.currentSrc;
+                                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                                    this._dic['url'] = superDrag.superDrag.imgSearchEngines[position_img].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                } else {
+                                    this._dic['url'] = _build_in_seach_engines_for_img[superDrag.superDrag.imgSearchEngines[position_img]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                                }
+                                this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
+                                this._dic['flag'] = 'openTable';
+                                this.handle_type = "sendMessage";
+                            }
+                        }
+                    } else {
+                        if (superDrag.superDrag.link_type[position_link] === 3) {
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            }
+                        } else {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                        }
+                        if (superDrag.superDrag.link_type[position_link] === 0) {
+                            this._dic['url'] = this.dragEvent.srcElement.parentNode.href;
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            this.handle_type = "sendMessage";
+                        } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                            this._dic['keywords'] = this.dragEvent.srcElement.parentNode.href;
+                            this.handle_type = "copyText";
+                        } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                            this._dic['keywords'] = this.dragEvent.srcElement.parentNode.innerText;
+                            this.handle_type = "copyText";
+                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                            keyword = this.dragEvent.srcElement.parentNode.innerText;
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            this.handle_type = "sendMessage";
+                        } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                            this._dic['keywords'] = this.dragEvent.srcElement.parentNode.href;
+                            this.handle_type = "qrcode";
+                        }
                     }
                 } else {
                     if (keyword) {
