@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener(message => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message['flag'] == 'openTable') {
     chrome.tabs.query({currentWindow: true}, tabs => {
       // console.log(tabs)
@@ -37,4 +37,5 @@ chrome.runtime.onMessage.addListener(message => {
         console.log(downloadId);
     });
   }
+  sendResponse({status: 'ok'});
 });

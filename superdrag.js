@@ -94,6 +94,21 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     new SuperDrag(superDrag);
     new OpenLinks(superDrag);
 
+    let timer;
+    let debounce = function(fn, timeout) {
+        // 利用闭包将内容传递出去
+        return function() {
+            if (timer) {
+                // 清除定时器
+                clearTimeout(timer);
+            }
+            // 设置一个新的定时器
+            timer = setTimeout(function(){
+                fn()
+            }, timeout);
+        }
+    }
+
     // 修改链接draggable属性
     link_draggable = function () {
         for (let link of document.links) {
@@ -112,7 +127,15 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     if (document.addEventListener) {
         document.addEventListener('DOMContentLoaded', function () {
             document.removeEventListener('DOMContentLoaded', arguments.callee, false);
-            link_draggable();
+            // 添加监听代码
+            var observer = new MutationObserver(mutationsList => {
+                debounce(link_draggable, 300)();
+            })
+            observer.observe(document.body, {
+                characterData: true,
+                childList: true,
+                subtree: true,
+            })
         }, false)
     } else if (document.attachEvent) {  // 兼容IE
         document.attachEvent('onreadystatechange', function () {
@@ -123,9 +146,6 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         })
     } else if (document.lastChild == document.body) {
         link_draggable();
-    }
-    window.onscroll = function() {  //监听滚动事件
-        link_draggable()
     }
 })
 

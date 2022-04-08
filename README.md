@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.7.1
+修复一些问题
+
 v3.7.0
 Before：某些链接无法拖拽
 After：理论上鼠标放到链接上浏览器左下角能显示链接的都能拖拽了
