@@ -496,6 +496,68 @@ class SuperDrag {
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
                     }
+                } else if (keyword) {
+                    if (urlPattern.test(keyword)) {
+                        if (superDrag.superDrag.link_type[position_link] === 3) {
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
+                            }
+                        } else {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
+                        }
+                        if (superDrag.superDrag.link_type[position_link] === 0) {
+                            if (keyword.substr(0, 4) != 'http') {
+                                keyword = "http://" + keyword;
+                            }
+                            this._dic['url'] = keyword;
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            this.handle_type = "sendMessage";
+                        } else if (superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) {
+                            this._dic['keywords'] = keyword;
+                            this.handle_type = "copyText";
+                        } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                            if (superDrag.superDrag.linkSearchEngines[position_link].url) {
+                                this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
+                            this._dic['flag'] = 'openTable';
+                            this.handle_type = "sendMessage";
+                        } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                            this._dic['keywords'] = keyword;
+                            this.handle_type = "qrcode";
+                        }
+                    } else {
+                        if (superDrag.superDrag.text_type[position_text] === 0) {
+                            if (superDrag.superDrag.searchEngines[position_text].url) {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + chrome.i18n.getMessage("custom_search");
+                            } else {
+                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].name;
+                            }
+                        } else {
+                            this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]];
+                        }
+                        if (superDrag.superDrag.text_type[position_text] === 0) {
+                            if (superDrag.superDrag.searchEngines[position_text].url) {
+                                this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            } else {
+                                this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
+                            }
+                            this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
+                            this._dic['flag'] = 'openTable';
+                            this.handle_type = "sendMessage";
+                        } else if (superDrag.superDrag.text_type[position_text] === 1) {
+                            this._dic['keywords'] = keyword;
+                            this.handle_type = "copyText";
+                        } else if (superDrag.superDrag.text_type[position_text] === 2) {
+                            this._dic['keywords'] = keyword;
+                            this.handle_type = "qrcode";
+                        }
+                    }
                 } else if (["A"].indexOf(this.dragEvent.srcElement.parentNode.nodeName) != -1) {
                     if (!this.containsImg) {
                         this.findImg(this.dragEvent.srcElement.parentNode.childNodes);
@@ -623,72 +685,8 @@ class SuperDrag {
                             this.handle_type = "qrcode";
                         }
                     }
-                } else {
-                    if (keyword) {
-                        if (urlPattern.test(keyword)) {
-                            if (superDrag.superDrag.link_type[position_link] === 3) {
-                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + chrome.i18n.getMessage("custom_search");
-                                } else {
-                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]] + " - " + _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].name;
-                                }
-                            } else {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_link] + " 链接 - " + _link_type[superDrag.superDrag.link_type[position_link]];
-                            }
-                            if (superDrag.superDrag.link_type[position_link] === 0) {
-                                if (keyword.substr(0, 4) != 'http') {
-                                    keyword = "http://" + keyword;
-                                }
-                                this._dic['url'] = keyword;
-                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                                this._dic['flag'] = 'openTable';
-                                this.handle_type = "sendMessage";
-                            } else if (superDrag.superDrag.link_type[position_link] === 1 || superDrag.superDrag.link_type[position_link] === 2) {
-                                this._dic['keywords'] = keyword;
-                                this.handle_type = "copyText";
-                            } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                if (superDrag.superDrag.linkSearchEngines[position_link].url) {
-                                    this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                } else {
-                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.linkSearchEngines[position_link]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                }
-                                this._dic['active'] = superDrag.superDrag.open_type_link[position_link] === 0;
-                                this._dic['flag'] = 'openTable';
-                                this.handle_type = "sendMessage";
-                            } else if (superDrag.superDrag.link_type[position_link] === 4) {
-                                this._dic['keywords'] = keyword;
-                                this.handle_type = "qrcode";
-                            }
-                        } else {
-                            if (superDrag.superDrag.text_type[position_text] === 0) {
-                                if (superDrag.superDrag.searchEngines[position_text].url) {
-                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + chrome.i18n.getMessage("custom_search");
-                                } else {
-                                    this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]] + " - " + _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].name;
-                                }
-                            } else {
-                                this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_text] + " 文本 - " + _text_type[superDrag.superDrag.text_type[position_text]];
-                            }
-                            if (superDrag.superDrag.text_type[position_text] === 0) {
-                                if (superDrag.superDrag.searchEngines[position_text].url) {
-                                    this._dic['url'] = superDrag.superDrag.searchEngines[position_text].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                } else {
-                                    this._dic['url'] = _build_in_seach_engines[superDrag.superDrag.searchEngines[position_text]].url.replace(/%s/gi, encodeURIComponent(keyword));
-                                }
-                                this._dic['active'] = superDrag.superDrag.open_type[position_text] === 0;
-                                this._dic['flag'] = 'openTable';
-                                this.handle_type = "sendMessage";
-                            } else if (superDrag.superDrag.text_type[position_text] === 1) {
-                                this._dic['keywords'] = keyword;
-                                this.handle_type = "copyText";
-                            } else if (superDrag.superDrag.text_type[position_text] === 2) {
-                                this._dic['keywords'] = keyword;
-                                this.handle_type = "qrcode";
-                            }
-                        }
-                    } else {
-                        this.notice.innerHTML = "Some mistakes have occurred.";
-                    }
+                }  else {
+                    this.notice.innerHTML = "Some mistakes have occurred.";
                 }
             }
         } else {
