@@ -128,8 +128,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         document.addEventListener('DOMContentLoaded', function () {
             document.removeEventListener('DOMContentLoaded', arguments.callee, false);
             // 添加监听代码
+            link_draggable()
             var observer = new MutationObserver(mutationsList => {
-                debounce(link_draggable, 300)();
+                debounce(link_draggable, 500)();
             })
             observer.observe(document.body, {
                 characterData: true,
