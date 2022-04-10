@@ -110,14 +110,20 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     }
 
     // 修改链接draggable属性
+    let rect;
     link_draggable = function () {
         for (let link of document.links) {
             if (link.draggable === false) {
                 link.draggable = true;
             }
-            for (let sub_link of link.childNodes) {
-                if (sub_link.draggable === false) {
-                    sub_link.draggable = true;
+            if (link.childElementCount > 0) {
+                rect = link.getBoundingClientRect();
+                if (Math.abs(rect.height - link.offsetHeight) > 1 || Math.abs(rect.width - link.offsetWidth) > 1) {
+                    for (let sub_link of link.childNodes) {
+                        if (sub_link.draggable === false) {
+                            sub_link.draggable = true;
+                        }
+                    }
                 }
             }
         }
