@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.7.2
+修复不能拖拽图片链接的问题
+
 v3.7.1
 修复一些问题
 
