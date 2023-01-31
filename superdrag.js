@@ -465,14 +465,8 @@ class SuperDrag {
                         this.notice.innerHTML = this.arrow[superDrag.superDrag.direction_sel][position_img] + " 图片 - " + _img_type[superDrag.superDrag.img_type[position_img]];
                     }
                     if (superDrag.superDrag.img_type[position_img] === 0) {
-                        for(let value of this.dragEvent.path){
-                            if (value.localName == 'img') {
-                                this._dic['url'] = value.currentSrc;
-                            } else if (value.localName == 'a') {
-                                this._dic['url'] = value.href;
-                                break;
-                            }
-                        }
+                        const temp = this.findImgLink(this.dragEvent.srcElement)
+                        this._dic['url'] = typeof (temp) != "undefined" ? temp : this.dragEvent.srcElement.currentSrc;
                         this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
@@ -753,6 +747,17 @@ class SuperDrag {
             }
         }
         return;
+    }
+
+    // 遍历节点
+    findImgLink(imgElement){ //查找图片路径的父节点是否存在链接
+        if (imgElement.parentNode.localName == 'a') {
+            return  imgElement.parentNode.href;
+        } else if (imgElement.parentNode.localName == 'body') {
+            return;
+        } else {
+            return this.findImgLink(imgElement.parentNode)
+        }
     }
 
     // toast提示信息
