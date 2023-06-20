@@ -351,18 +351,10 @@ class SuperDrag {
                                 this._dic['keywords'] = this.dragEvent.srcElement.href;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                                if (this.containsImg.alt) {
-                                    this._dic['keywords'] = this.containsImg.alt
-                                } else {
-                                    this._dic['keywords'] = this.containsImg.currentSrc;
-                                }
+                                this._dic['keywords'] = this.dragEvent.srcElement.innerText;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                if (this.containsImg.alt) {
-                                    keyword = this.containsImg.alt
-                                } else {
-                                    keyword = this.containsImg.currentSrc;
-                                }
+                                keyword = this.dragEvent.srcElement.innerText;
                                 if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                     this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
@@ -583,18 +575,10 @@ class SuperDrag {
                                 this._dic['keywords'] = this.dragEvent.srcElement.parentNode.href;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 2) {
-                                if (this.containsImg.alt) {
-                                    this._dic['keywords'] = this.containsImg.alt
-                                } else {
-                                    this._dic['keywords'] = this.containsImg.currentSrc;
-                                }
+                                this._dic['keywords'] = this.dragEvent.srcElement.innerText;
                                 this.handle_type = "copyText";
                             } else if (superDrag.superDrag.link_type[position_link] === 3) {
-                                if (this.containsImg.alt) {
-                                    keyword = this.containsImg.alt
-                                } else {
-                                    keyword = this.containsImg.currentSrc;
-                                }
+                                keyword = this.dragEvent.srcElement.innerText;
                                 if (superDrag.superDrag.linkSearchEngines[position_link].url) {
                                     this._dic['url'] = superDrag.superDrag.linkSearchEngines[position_link].url.replace(/%s/gi, encodeURIComponent(keyword));
                                 } else {
