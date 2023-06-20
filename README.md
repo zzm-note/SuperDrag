@@ -17,6 +17,9 @@ Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nl
 
 ### 更新日志：
 ```
+v3.7.3
+兼容谷歌搜索结果的复制链接文本功能
+
 v3.7.2
 修复不能拖拽图片链接的问题
 
