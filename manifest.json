@@ -8,7 +8,7 @@
 		"48" : "img/icon48.png",
 		"128" : "img/icon128.png"
 	},
-	"default_locale" : "zh",
+	"default_locale" : "zh_CN",
 	"background" : {
 		"service_worker": "eventpage.js"
 	},
