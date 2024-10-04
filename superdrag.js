@@ -119,11 +119,11 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             if (link.childElementCount > 0) {
                 rect = link.getBoundingClientRect();
                 if (Math.abs(rect.height - link.offsetHeight) > 1 || Math.abs(rect.width - link.offsetWidth) > 1) {
-                    for (let sub_link of link.childNodes) {
-                        if (sub_link.draggable === false) {
-                            sub_link.draggable = true;
+                    link.querySelectorAll("div", "a", "img").forEach(function (ele) {
+                        if (ele.draggable === false) {
+                            ele.draggable = true;
                         }
-                    }
+                    })
                 }
             }
         }
@@ -329,7 +329,7 @@ class SuperDrag {
                 let urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
                 if (this.dragEvent.srcElement.localName == "a") {
                     if (!this.containsImg) {
-                        this.findImg(this.dragEvent.srcElement.childNodes);
+                        this.findImg(this.dragEvent.srcElement);
                     }
                     if (this.containsImg) { //如果链接包含图片
                         if (superDrag.superDrag.firstEvent) {
@@ -458,7 +458,7 @@ class SuperDrag {
                     }
                     if (superDrag.superDrag.img_type[position_img] === 0) {
                         const temp = this.findImgLink(this.dragEvent.srcElement)
-                        this._dic['url'] = typeof (temp) != "undefined" ? temp : this.dragEvent.srcElement.currentSrc;
+                        this._dic['url'] = (temp && typeof (temp) != "undefined") ? temp : this.dragEvent.srcElement.currentSrc;
                         this._dic['active'] = superDrag.superDrag.open_type_img[position_img] === 0;
                         this._dic['flag'] = 'openTable';
                         this.handle_type = "sendMessage";
@@ -553,7 +553,7 @@ class SuperDrag {
                     }
                 } else if (["A"].indexOf(this.dragEvent.srcElement.parentNode.nodeName) != -1) {
                     if (!this.containsImg) {
-                        this.findImg(this.dragEvent.srcElement.parentNode.childNodes);
+                        this.findImg(this.dragEvent.srcElement.parentNode);
                     }
                     if (this.containsImg) { //如果链接包含图片
                         if (superDrag.superDrag.firstEvent) {
@@ -720,27 +720,25 @@ class SuperDrag {
 
     // 遍历节点
     findImg(treeNode){ //遍历树  获取判断是否存在图片
-        for (let ele of treeNode) {
-            if (ele.nodeName.toLowerCase() == 'img') {
-                this.containsImg = ele;
-                break;
-            }
-            if (ele.childNodes.length > 0) {
-                this.findImg(ele.childNodes);
-                if (this.containsImg) {return;}
-            }
+        let eles = treeNode.querySelectorAll('img')
+        if (eles.length > 0){
+            this.containsImg = eles[0];
+        } else {
+            return;
         }
-        return;
     }
 
     // 遍历节点
-    findImgLink(imgElement){ //查找图片路径的父节点是否存在链接
+    findImgLink(imgElement, depth = 0, maxDepth = 10){ //查找图片路径的父节点是否存在链接
+        if (depth > maxDepth) {
+            return;
+        }
         if (imgElement.parentNode.localName == 'a') {
-            return  imgElement.parentNode.href;
+            return imgElement.parentNode.href;
         } else if (imgElement.parentNode.localName == 'body') {
             return;
         } else {
-            return this.findImgLink(imgElement.parentNode)
+            return this.findImgLink(imgElement.parentNode, depth + 1)
         }
     }
 

@@ -18,6 +18,10 @@ Chrome商店：[下载链接](https://chrome.google.com/webstore/detail/superdra
 
 ### 更新日志：
 ```
+v3.7.5
+修复一些bug
+优化一下性能
+
 v3.7.3
 兼容谷歌搜索结果的复制链接文本功能
 
