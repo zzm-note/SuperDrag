@@ -1,0 +1,65 @@
+{
+	"name" : {
+		"message": "SuperDrag"
+	},
+	"desc" : {
+		"message" : "拖拽文本搜索和链接"
+	},
+	"fieldtext0" : {
+		"message" : "文本类型"
+	},
+	"fieldlink0" : {
+		"message" : "链接类型"
+	},
+	"fieldimg0" : {
+		"message" : "图片类型"
+	},
+	"custom_search" : {
+		"message" : "『自定义』..."
+	},
+	"searchUrlDescription" : {
+		"message" : "\uD83D\uDC49自定义搜索引擎时，用％s或％S代替其中关键字"
+	},
+	"common" : {
+		"message" : "常规设置"
+	},
+	"direction" : {
+		"message" : "选择拖拽方向："
+	},
+	"direction_des" : {
+		"message" : "注：不适用于双向拖拽，双向拖拽只有上下或左右！"
+	},
+	"enableAlt_text" : {
+		"message" : "拖拽过程中按下Alt键取消拖拽操作(MAC原生支持，取消无效)"
+	},
+	"timeout_des" : {
+		"message" : "拖拽过程中自动取消拖拽操作的超时时间(毫秒)"
+	},
+	"timeout_des2" : {
+		"message" : "\uD83D\uDC49输入0则不会自动取消"
+	},
+	"firstEventDesc" : {
+		"message" : "如果链接包含图片，优先处理链接类型；不选中则为图片类型"
+	},
+	"saveAsDesc" : {
+		"message" : "下载图片弹出文件另存为对话框"
+	},
+	"showNoticeDesc" : {
+		"message" : "实时显示当前拖拽事件的提示框"
+	},
+	"openLinksDesc" : {
+		"message" : "按住"
+	},
+	"openLinksDesc2" : {
+		"message" : "键鼠标左键框选"
+	},
+	"openLinksDesc3" : {
+		"message" : "打开多个链接"
+	},
+	"openLinksPrompt" : {
+		"message" : "\u261d按键输入框为空则关闭框选链接功能！"
+	},
+	"effectPrompt" : {
+		"message" : "\uD83D\uDC48此处可选4个方向或2个方向拖拽哦\uD83D\uDE01"
+	}
+}
