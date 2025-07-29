@@ -1,4 +1,4 @@
-Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nlefalggllbckbaegjonehiokkddgcbn)
+Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nlefalggllbckbaegjonehiokkddgcbn)  
 Chrome商店：[下载链接](https://chrome.google.com/webstore/detail/superdrag/nmnjeedgpnieleiebjaabgaaeccnddbf)
 
 ### 功能：

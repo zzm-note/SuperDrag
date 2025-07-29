@@ -1,5 +1,4 @@
-Edge商店：[下载链接](https://microsoftedge.microsoft.com/addons/detail/nlefalggllbckbaegjonehiokkddgcbn)
-Chrome商店：[下载链接](https://chrome.google.com/webstore/detail/superdrag/nmnjeedgpnieleiebjaabgaaeccnddbf)
+Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 功能：
 > 扩展的主要特性：  
