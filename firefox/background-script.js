@@ -3,11 +3,12 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     browser.tabs.query({currentWindow: true}, tabs => {
       // console.log(tabs)
       // console.log(message);
+      let currentTab = tabs.find(tab => tab.active === true);
       let showTabs = tabs.filter(tab => tab.title !== 'Firefox View');
       if (typeof message['url'] == "string") {
         for (const tab of showTabs.reverse()) {
           if (tab.isArticle == undefined || tab.active == true) {
-            browser.tabs.create({index: tab.index + 1, url: message['url'], active: message['active']});
+            browser.tabs.create({index: tab.index + 1, url: message['url'], openerTabId: currentTab.id, active: message['active']});
             return;
           }
         }
@@ -17,12 +18,12 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
             for (const i in message['url']){
               if (message['active'] == true){
                 if (i == 0){
-                  browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], active: message['active'] });
+                  browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: currentTab.id, active: message['active'] });
                 } else {
-                  browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], active: false });
+                  browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: currentTab.id, active: false });
                 }
               } else {
-                browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], active: message['active'] });
+                browser.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: currentTab.id, active: message['active'] });
               }
             }
             return;
