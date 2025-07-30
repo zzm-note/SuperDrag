@@ -4,7 +4,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // console.log(tabs)
       // console.log(message);
       let currentTab = tabs.find(tab => tab.active === true);
-      let showTabs = tabs.filter(tab => tab.title !== 'Firefox View');
+      let showTabs = tabs.filter(tab => tab.url !== 'about:firefoxview');
       if (typeof message['url'] == "string") {
         for (const tab of showTabs.reverse()) {
           if (tab.isArticle == undefined || tab.active == true) {

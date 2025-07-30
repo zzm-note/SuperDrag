@@ -17,7 +17,7 @@ Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 更新日志：
 ```
-v3.7.8
+v3.7.9
 兼容Firefox加载标签的属性
 
 v3.7.5
