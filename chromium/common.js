@@ -12,7 +12,7 @@ function _getDefault() {
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],
 		text_type : [0, 0, 0, 0],
-		searchEngines : [18, 10, 2, 2],
+		searchEngines : [19, 11, 2, 2],
 
 		effect_link : 0,
 		open_type_link : [0, 1, 0, 1],
@@ -53,6 +53,9 @@ var _build_in_seach_engines = [{
 }, {
 	"name" : "『网页』360",
 	"url" : "https://www.so.com/s?ie=utf-8&q=%s"
+}, {
+	"name" : "『网页』头条搜索",
+	"url" : "https://so.toutiao.com/search?dvpf=pc&keyword=%s"
 }, {
 	"name" : "『翻译』有道词典",
 	"url" : "http://dict.youdao.com/search?q=%s"
