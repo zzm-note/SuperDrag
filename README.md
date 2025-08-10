@@ -19,6 +19,11 @@ Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 更新日志：
 ```
+v3.7.7
+新增配置导出导入功能
+修复复制图片失败
+优化一下默认参数
+
 v3.7.5
 修复一些bug
 优化一下性能
