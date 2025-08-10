@@ -17,6 +17,9 @@ Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 更新日志：
 ```
+v3.8.1
+增加一个头条搜索
+
 v3.8.0
 新增配置导出导入功能
 修复复制图片失败
