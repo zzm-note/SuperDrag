@@ -61,5 +61,17 @@
 	},
 	"effectPrompt" : {
 		"message" : "\uD83D\uDC48此处可选4个方向或2个方向拖拽哦\uD83D\uDE01"
+	},
+	"export" : {
+		"message" : "配置导出"
+	},
+	"fileInput" : {
+		"message" : "配置导入"
+	},
+	"fileInputSuccessful" : {
+		"message" : "配置导入成功，2秒后页面将刷新..."
+	},
+	"fileInputFailed" : {
+		"message" : "配置导入失败"
 	}
 }

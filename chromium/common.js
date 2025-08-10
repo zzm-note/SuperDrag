@@ -21,7 +21,7 @@ function _getDefault() {
 
 		effect_img : 0,
 		open_type_img : [0, 1, 0, 1],
-		img_type : [1, 4, 0, 0],
+		img_type : [1, 2, 0, 0],
 		imgSearchEngines : [1, 1, 1, 1]
 	};
 }
@@ -53,9 +53,6 @@ var _build_in_seach_engines = [{
 }, {
 	"name" : "『网页』360",
 	"url" : "https://www.so.com/s?ie=utf-8&q=%s"
-}, {
-	"name" : "『网页』秘迹搜索",
-	"url" : "https://mijisou.com/?q=%s&category_general=on&time_range=&language=zh-CN"
 }, {
 	"name" : "『翻译』有道词典",
 	"url" : "http://dict.youdao.com/search?q=%s"
@@ -107,12 +104,12 @@ var _build_in_seach_engines = [{
 }];
 
 var _build_in_seach_engines_for_img = [{
-			"name" : "Google",
-			"url" : "https://www.google.com/searchbyimage?image_url=%s"
-		}, {
-			"name" : "Baidu",
-			"url" : "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s"
-		}, {
-			"name" : "TinEye",
-			"url" : "https://www.tineye.com/search?url=%s"
-		}];
+    "name" : "Google",
+    "url" : "https://www.google.com/searchbyimage?image_url=%s"
+}, {
+    "name" : "Baidu",
+    "url" : "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s"
+}, {
+    "name" : "TinEye",
+    "url" : "https://www.tineye.com/search?url=%s"
+}];
