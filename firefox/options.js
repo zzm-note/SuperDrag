@@ -131,8 +131,42 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         }, false);
     document.getElementById("keyCode").addEventListener(
         "input", function () {
-                superDrag.superDrag.keyCode = this.value;
-                _save(superDrag.superDrag);
+            superDrag.superDrag.keyCode = this.value;
+            _save(superDrag.superDrag);
+        }, false);
+    document.getElementById("exportBtn").addEventListener(
+        "click", function () {
+            const jsonData = JSON.stringify(superDrag.superDrag);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            browser.runtime.sendMessage({
+                'url': url,
+                'flag': 'download',
+                'saveAs': superDrag.superDrag.saveAs
+            })
+        }, false);
+    document.getElementById("fileInput").addEventListener(
+        "change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = readerEvent => {
+                try {
+                    const content = readerEvent.target.result;
+                    const importedData = JSON.parse(content);
+                    superDrag.superDrag = importedData
+                    _save(superDrag.superDrag);
+                    document.getElementById("fileInputTips").innerHTML = browser.i18n.getMessage('fileInputSuccessful');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000); // 2000 毫秒 = 2 秒
+                } catch (err) {
+                    document.getElementById("fileInputTips").innerHTML = browser.i18n.getMessage('fileInputFailed');
+                }
+            };
+
+            reader.readAsText(file);
         }, false);
 
     document.getElementById('timeout').value = superDrag.superDrag.timeout;
@@ -178,6 +212,8 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;
     document.getElementById("showNotice").checked = superDrag.superDrag.showNotice;
+    document.getElementById("exportBtnLabel").innerText = browser.i18n.getMessage('export');
+    document.getElementById("fileInputLabel").innerText = browser.i18n.getMessage('fileInput');
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;

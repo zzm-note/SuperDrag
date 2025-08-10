@@ -825,15 +825,24 @@ class SuperDrag {
     // 复制图片
     async copyImage(url) {
         try {
-            const data = await fetch(url, {mode: "no-cors"});
-            const blob = await data.blob();
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    [blob.type]: blob
-                })
-            ]);
-            console.log('Image copied.');
-            SuperDrag.toast("复制成功")
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = 'anonymous'; // 尝试匿名跨域
+
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob(async (blob) => {
+                    const item = new ClipboardItem({ [blob.type]: blob });
+                    await navigator.clipboard.write([item]);
+                    console.log('图片已通过 canvas 复制');
+                    SuperDrag.toast("复制成功")
+                }, 'image/png');
+            };
+            img.src = url;
         } catch (err) {
             console.error(err.name, err.message);
             SuperDrag.toast("复制失败:" + err.message);
