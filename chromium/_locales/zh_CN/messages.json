@@ -30,7 +30,7 @@
 		"message" : "注：不适用于双向拖拽，双向拖拽只有上下或左右！"
 	},
 	"enableAlt_text" : {
-		"message" : "拖拽过程中按下Alt键取消拖拽操作(MAC原生支持，取消无效)"
+		"message" : "按下Alt键(MAC为Command键)临时取消扩展拖拽功能，使用浏览器默认的拖拽行为(MAC总是生效，取消勾选无效)"
 	},
 	"timeout_des" : {
 		"message" : "拖拽过程中自动取消拖拽操作的超时时间(毫秒)"

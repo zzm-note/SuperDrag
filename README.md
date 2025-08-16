@@ -19,6 +19,9 @@ Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 更新日志：
 ```
+v3.7.8
+按住Alt键取消扩展拖拽功能的同时新增使用浏览器默认的拖拽行为
+
 v3.7.7
 新增配置导出导入功能
 修复复制图片失败

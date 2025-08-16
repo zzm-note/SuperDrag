@@ -17,6 +17,9 @@ Firefox商店：[下载链接](https://addons.mozilla.org/addon/superdrag)
 
 ### 更新日志：
 ```
+v3.8.2
+按住Alt键取消扩展拖拽功能的同时新增使用浏览器默认的拖拽行为
+
 v3.8.1
 增加一个头条搜索
 

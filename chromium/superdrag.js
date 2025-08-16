@@ -182,6 +182,15 @@ class SuperDrag {
     }
 
     dragover(event, superDrag) {
+        if (superDrag.superDrag.enableAlt && (event.altKey || (this.isMac && event.metaKey))) {
+            this.toCancel = true;
+            if (this.notice) {
+                this.notice.style.display = "none";
+            }
+        }
+        if (this.toCancel) {
+            return;
+        }
         if (!this.notice) {
             this.notice = document.createElement('div');
             this.notice.id = "notice-superDrag" + this._dic.start_time;
@@ -197,9 +206,6 @@ class SuperDrag {
         // console.log(time_collect);
         if (superDrag.superDrag.timeout !== 0 && superDrag.superDrag.timeout < time_collect) {
             this._dic.timeout = true;
-        }
-        if (superDrag.superDrag.enableAlt && (event.altKey || (this.isMac && event.metaKey))) {
-            this.toCancel = true;
         }
         if (event.button==0&&event.target.tagName&&((event.target.tagName.toLowerCase()=="input"&&event.target.type=="text")||event.target.tagName.toLowerCase()=="textarea")) {
             this.dragInBox = true
