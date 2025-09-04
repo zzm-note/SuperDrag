@@ -168,6 +168,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
 
             reader.readAsText(file);
         }, false);
+    document.getElementById("tabOpenPosNext").addEventListener(
+        "change", function () {
+            superDrag.superDrag.tabOpenPos = this.value;
+            _save(superDrag.superDrag);
+        }, false);
+    document.getElementById("tabOpenPosEnd").addEventListener(
+        "change", function () {
+            superDrag.superDrag.tabOpenPos = this.value;
+            _save(superDrag.superDrag);
+        }, false);
 
     document.getElementById('timeout').value = superDrag.superDrag.timeout;
     document.getElementById('keyCode').value = superDrag.superDrag.keyCode;
@@ -208,6 +218,14 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('searchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('linkSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('imgSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
+    document.getElementById('tabOpenPos').innerHTML = chrome.i18n.getMessage('tabOpenPos');
+    document.getElementById('tabOpenPosNextLabel').innerHTML = chrome.i18n.getMessage('tabOpenPosNext');
+    document.getElementById('tabOpenPosEndLabel').innerHTML = chrome.i18n.getMessage('tabOpenPosEnd');
+    if (superDrag.superDrag.tabOpenPos === 'next') {
+        document.getElementById('tabOpenPosNext').checked = true;
+    } else {
+        document.getElementById('tabOpenPosEnd').checked = true;
+    }
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;

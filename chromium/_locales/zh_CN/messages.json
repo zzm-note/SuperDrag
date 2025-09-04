@@ -73,5 +73,14 @@
 	},
 	"fileInputFailed" : {
 		"message" : "配置导入失败"
-	}
+	},
+    "tabOpenPos" : {
+        "message" : "新标签页打开位置："
+    },
+    "tabOpenPosNextLabel" : {
+        "message" : "紧邻当前标签页"
+    },
+    "tabOpenPosEndLabel" : {
+        "message" : "在标签页末尾（类Vivaldi）"
+    }
 }

@@ -8,6 +8,7 @@ function _getDefault() {
 		showNotice: true,
 		keyCode: "Escape",
 		openLinksOpenType: 1,
+		tabOpenPos: "end",
 
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],

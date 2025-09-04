@@ -169,6 +169,13 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             reader.readAsText(file);
         }, false);
 
+    document.querySelectorAll('input[name="tabOpenPos"]').forEach(elem => {
+        elem.addEventListener("change", function(event) {
+            superDrag.superDrag.tabOpenPos = event.target.value;
+            _save(superDrag.superDrag);
+        });
+    });
+
     document.getElementById('timeout').value = superDrag.superDrag.timeout;
     document.getElementById('keyCode').value = superDrag.superDrag.keyCode;
     for (i = 0; i < 3; i++) {
@@ -214,6 +221,16 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("showNotice").checked = superDrag.superDrag.showNotice;
     document.getElementById("exportBtnLabel").innerText = browser.i18n.getMessage('export');
     document.getElementById("fileInputLabel").innerText = browser.i18n.getMessage('fileInput');
+
+    document.getElementById('tabOpenPos').innerHTML = browser.i18n.getMessage('tabOpenPos');
+    document.getElementById('tabOpenPosNextLabel').innerHTML = browser.i18n.getMessage('tabOpenPosNextLabel');
+    document.getElementById('tabOpenPosEndLabel').innerHTML = browser.i18n.getMessage('tabOpenPosEndLabel');
+
+    if (superDrag.superDrag.tabOpenPos === 'next') {
+        document.getElementById('tabOpenPosNext').checked = true;
+    } else {
+        document.getElementById('tabOpenPosEnd').checked = true;
+    }
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
