@@ -20,6 +20,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               }
             }
           }
+          sendResponse({status: 'ok'});
         });
       } else { // 'end'
         chrome.tabs.query({currentWindow: true}, tabs => {
@@ -27,6 +28,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             for (const tab of tabs.reverse()) {
               if (tab.hasOwnProperty("openerTabId") || tab.active == true) {
                 chrome.tabs.create({index: tab.index + 1, url: message['url'], openerTabId: tab.id, active: message['active']});
+                sendResponse({status: 'ok'});
                 return;
               }
             }
@@ -44,20 +46,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     chrome.tabs.create({index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: tab.id, active: message['active']});
                   }
                 }
+                sendResponse({status: 'ok'});
                 return;
               }
             }
           }
+          sendResponse({status: 'ok'});
         });
       }
     });
+    return true; // Indicates async response
   } else if (message['flag'] == 'download') {
     chrome.downloads.download({
       url: message['url'],
       saveAs: message['saveAs']
     }, function (downloadId) {
       console.log(downloadId);
+      sendResponse({status: 'ok'});
     });
+    return true; // Indicates async response
   }
   sendResponse({status: 'ok'});
 });

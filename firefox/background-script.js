@@ -20,6 +20,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
               }
             }
           }
+          sendResponse({status: 'ok'});
         });
       } else { // 'end'
         browser.tabs.query({currentWindow: true}).then(tabs => {
@@ -29,6 +30,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
             for (const tab of showTabs.reverse()) {
               if (tab.isArticle == undefined || tab.active == true) {
                 browser.tabs.create({index: tab.index + 1, url: message['url'], openerTabId: currentTab.id, active: message['active']});
+                sendResponse({status: 'ok'});
                 return;
               }
             }
@@ -46,20 +48,25 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     browser.tabs.create({index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: currentTab.id, active: message['active']});
                   }
                 }
+                sendResponse({status: 'ok'});
                 return;
               }
             }
           }
+          sendResponse({status: 'ok'});
         });
       }
     });
+    return true; // Indicates async response
   } else if (message['flag'] == 'download') {
     browser.downloads.download({
       url: message['url'],
       saveAs: message['saveAs']
     }, function (downloadId) {
       console.log(downloadId);
+      sendResponse({status: 'ok'});
     });
+    return true; // Indicates async response
   }
   sendResponse({status: 'ok'});
 });

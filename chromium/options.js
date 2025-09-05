@@ -168,12 +168,7 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
 
             reader.readAsText(file);
         }, false);
-    document.getElementById("tabOpenPosNext").addEventListener(
-        "change", function () {
-            superDrag.superDrag.tabOpenPos = this.value;
-            _save(superDrag.superDrag);
-        }, false);
-    document.getElementById("tabOpenPosEnd").addEventListener(
+    document.getElementById("tabOpenPosSelect").addEventListener(
         "change", function () {
             superDrag.superDrag.tabOpenPos = this.value;
             _save(superDrag.superDrag);
@@ -219,13 +214,14 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('linkSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('imgSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById('tabOpenPos').innerHTML = chrome.i18n.getMessage('tabOpenPos');
-    document.getElementById('tabOpenPosNextLabel').innerHTML = chrome.i18n.getMessage('tabOpenPosNext');
-    document.getElementById('tabOpenPosEndLabel').innerHTML = chrome.i18n.getMessage('tabOpenPosEnd');
-    if (superDrag.superDrag.tabOpenPos === 'next') {
-        document.getElementById('tabOpenPosNext').checked = true;
-    } else {
-        document.getElementById('tabOpenPosEnd').checked = true;
+    
+    // Initialize tab open position dropdown
+    const tabOpenPosSelect = document.getElementById("tabOpenPosSelect");
+    if (!tabOpenPosSelect.options.length) {
+        tabOpenPosSelect.add(new Option(chrome.i18n.getMessage('tabOpenPosNext'), 'next', false));
+        tabOpenPosSelect.add(new Option(chrome.i18n.getMessage('tabOpenPosEnd'), 'end', false));
     }
+    tabOpenPosSelect.value = superDrag.superDrag.tabOpenPos;
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;

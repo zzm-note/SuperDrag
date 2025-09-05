@@ -169,12 +169,11 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             reader.readAsText(file);
         }, false);
 
-    document.querySelectorAll('input[name="tabOpenPos"]').forEach(elem => {
-        elem.addEventListener("change", function(event) {
-            superDrag.superDrag.tabOpenPos = event.target.value;
+    document.getElementById("tabOpenPosSelect").addEventListener(
+        "change", function () {
+            superDrag.superDrag.tabOpenPos = this.value;
             _save(superDrag.superDrag);
-        });
-    });
+        }, false);
 
     document.getElementById('timeout').value = superDrag.superDrag.timeout;
     document.getElementById('keyCode').value = superDrag.superDrag.keyCode;
@@ -223,14 +222,14 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("fileInputLabel").innerText = browser.i18n.getMessage('fileInput');
 
     document.getElementById('tabOpenPos').innerHTML = browser.i18n.getMessage('tabOpenPos');
-    document.getElementById('tabOpenPosNextLabel').innerHTML = browser.i18n.getMessage('tabOpenPosNextLabel');
-    document.getElementById('tabOpenPosEndLabel').innerHTML = browser.i18n.getMessage('tabOpenPosEndLabel');
-
-    if (superDrag.superDrag.tabOpenPos === 'next') {
-        document.getElementById('tabOpenPosNext').checked = true;
-    } else {
-        document.getElementById('tabOpenPosEnd').checked = true;
+    
+    // Initialize tab open position dropdown
+    const tabOpenPosSelect = document.getElementById("tabOpenPosSelect");
+    if (!tabOpenPosSelect.options.length) {
+        tabOpenPosSelect.add(new Option(browser.i18n.getMessage('tabOpenPosNext'), 'next', false));
+        tabOpenPosSelect.add(new Option(browser.i18n.getMessage('tabOpenPosEnd'), 'end', false));
     }
+    tabOpenPosSelect.value = superDrag.superDrag.tabOpenPos;
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
