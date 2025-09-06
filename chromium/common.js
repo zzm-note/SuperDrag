@@ -8,6 +8,7 @@ function _getDefault() {
 		showNotice: true,
 		keyCode: "Escape",
 		openLinksOpenType: 1,
+		tabOpenPosition: 0,
 
 		effect_text : 0,
 		open_type : [1, 1, 0, 1],
@@ -29,6 +30,7 @@ function _getDefault() {
 var direction_val = ["↖ ↙ ↗ ↘", "↑ ↓ ← →"];
 var _effect_text = ["四面八方", "上下", "左右"];
 var _open_type = ["前台", "后台"];
+var _tab_open_position = ["右侧打开", "末尾打开"];
 var _text_type = ["搜索", "复制", "生成二维码"];
 var _effect_link = ["四面八方", "上下", "左右"];
 var _link_type = ["打开链接", "复制链接", "复制链接文本", "搜索链接文本", "生成二维码"];

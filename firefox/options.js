@@ -1,4 +1,4 @@
-browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
+chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     let types;
     let _s;
     let i;
@@ -40,6 +40,10 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById("openLinks").addEventListener(
         "change", function () {
             _save_open_type_open_links(this, superDrag);
+        }, false);
+    document.getElementById("tabOpenPosition").addEventListener(
+        "change", function () {
+            _save_tab_open_position(this, superDrag);
         }, false);
     for (i = 0; i < 4; i++) {
         document.getElementById("text_type_" + i).addEventListener(
@@ -139,7 +143,7 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             const jsonData = JSON.stringify(superDrag.superDrag);
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            browser.runtime.sendMessage({
+            chrome.runtime.sendMessage({
                 'url': url,
                 'flag': 'download',
                 'saveAs': superDrag.superDrag.saveAs
@@ -157,12 +161,12 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
                     const importedData = JSON.parse(content);
                     superDrag.superDrag = importedData
                     _save(superDrag.superDrag);
-                    document.getElementById("fileInputTips").innerHTML = browser.i18n.getMessage('fileInputSuccessful');
+                    document.getElementById("fileInputTips").innerHTML = chrome.i18n.getMessage('fileInputSuccessful');
                     setTimeout(function() {
                         location.reload();
                     }, 2000); // 2000 毫秒 = 2 秒
                 } catch (err) {
-                    document.getElementById("fileInputTips").innerHTML = browser.i18n.getMessage('fileInputFailed');
+                    document.getElementById("fileInputTips").innerHTML = chrome.i18n.getMessage('fileInputFailed');
                 }
             };
 
@@ -186,34 +190,36 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     }
     _s.selectedIndex = superDrag.superDrag.effect_img;
     _load_effect_img(superDrag.superDrag.effect_img, superDrag);
-    document.getElementById('common').innerHTML = browser.i18n.getMessage('common');
-    document.getElementById('direction').innerHTML = browser.i18n.getMessage('direction');
-    document.getElementById('direction_des').innerHTML = browser.i18n.getMessage('direction_des');
-    document.getElementById('enableAlt_text').innerHTML = browser.i18n.getMessage('enableAlt_text');
-    document.getElementById('timeout_des').innerHTML = browser.i18n.getMessage('timeout_des');
-    document.getElementById('timeout_des2').innerHTML = browser.i18n.getMessage('timeout_des2');
-    document.getElementById('firstEventDesc').innerHTML = browser.i18n.getMessage('firstEventDesc');
-    document.getElementById('saveAsDesc').innerHTML = browser.i18n.getMessage('saveAsDesc');
-    document.getElementById('showNoticeDesc').innerHTML = browser.i18n.getMessage('showNoticeDesc');
-    document.getElementById('openLinksDesc').innerHTML = browser.i18n.getMessage('openLinksDesc');
-    document.getElementById('openLinksDesc2').innerHTML = browser.i18n.getMessage('openLinksDesc2');
-    document.getElementById('openLinksDesc3').innerHTML = browser.i18n.getMessage('openLinksDesc3');
-    document.getElementById('openLinksPrompt').innerHTML = browser.i18n.getMessage('openLinksPrompt');
-    document.getElementById('effect_text_prompt').innerHTML = browser.i18n.getMessage('effectPrompt');
-    document.getElementById('effect_link_prompt').innerHTML = browser.i18n.getMessage('effectPrompt');
-    document.getElementById('effect_img_prompt').innerHTML = browser.i18n.getMessage('effectPrompt');
-    document.getElementById('fieldtext0').innerHTML = browser.i18n.getMessage('fieldtext0');
-    document.getElementById('fieldlink0').innerHTML = browser.i18n.getMessage('fieldlink0');
-    document.getElementById('fieldimg0').innerHTML = browser.i18n.getMessage('fieldimg0');
-    document.getElementById('searchUrlDescription').innerHTML = browser.i18n.getMessage('searchUrlDescription');
-    document.getElementById('linkSearchUrlDescription').innerHTML = browser.i18n.getMessage('searchUrlDescription');
-    document.getElementById('imgSearchUrlDescription').innerHTML = browser.i18n.getMessage('searchUrlDescription');
+    document.getElementById('common').innerHTML = chrome.i18n.getMessage('common');
+    document.getElementById('direction').innerHTML = chrome.i18n.getMessage('direction');
+    document.getElementById('direction_des').innerHTML = chrome.i18n.getMessage('direction_des');
+    document.getElementById('enableAlt_text').innerHTML = chrome.i18n.getMessage('enableAlt_text');
+    document.getElementById('timeout_des').innerHTML = chrome.i18n.getMessage('timeout_des');
+    document.getElementById('timeout_des2').innerHTML = chrome.i18n.getMessage('timeout_des2');
+    document.getElementById('firstEventDesc').innerHTML = chrome.i18n.getMessage('firstEventDesc');
+    document.getElementById('saveAsDesc').innerHTML = chrome.i18n.getMessage('saveAsDesc');
+    document.getElementById('showNoticeDesc').innerHTML = chrome.i18n.getMessage('showNoticeDesc');
+    document.getElementById('openLinksDesc').innerHTML = chrome.i18n.getMessage('openLinksDesc');
+    document.getElementById('openLinksDesc2').innerHTML = chrome.i18n.getMessage('openLinksDesc2');
+    document.getElementById('openLinksDesc3').innerHTML = chrome.i18n.getMessage('openLinksDesc3');
+    document.getElementById('openLinksPrompt').innerHTML = chrome.i18n.getMessage('openLinksPrompt');
+    document.getElementById('tabOpenPositionDesc').innerHTML = chrome.i18n.getMessage('tabOpenPositionDesc');
+    document.getElementById('tabOpenPositionPrompt').innerHTML = chrome.i18n.getMessage('tabOpenPositionPrompt');
+    document.getElementById('effect_text_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
+    document.getElementById('effect_link_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
+    document.getElementById('effect_img_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
+    document.getElementById('fieldtext0').innerHTML = chrome.i18n.getMessage('fieldtext0');
+    document.getElementById('fieldlink0').innerHTML = chrome.i18n.getMessage('fieldlink0');
+    document.getElementById('fieldimg0').innerHTML = chrome.i18n.getMessage('fieldimg0');
+    document.getElementById('searchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
+    document.getElementById('linkSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
+    document.getElementById('imgSearchUrlDescription').innerHTML = chrome.i18n.getMessage('searchUrlDescription');
     document.getElementById("enableAlt").checked = superDrag.superDrag.enableAlt;
     document.getElementById("firstEvent").checked = superDrag.superDrag.firstEvent;
     document.getElementById("saveAs").checked = superDrag.superDrag.saveAs;
     document.getElementById("showNotice").checked = superDrag.superDrag.showNotice;
-    document.getElementById("exportBtnLabel").innerText = browser.i18n.getMessage('export');
-    document.getElementById("fileInputLabel").innerText = browser.i18n.getMessage('fileInput');
+    document.getElementById("exportBtnLabel").innerText = chrome.i18n.getMessage('export');
+    document.getElementById("fileInputLabel").innerText = chrome.i18n.getMessage('fileInput');
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.open_type;
@@ -236,6 +242,9 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
 
     _open_links_select = _init_open_type_open_links()
     _open_links_select.selectedIndex = superDrag.superDrag.openLinksOpenType;
+
+    _tab_open_position_select = _init_tab_open_position()
+    _tab_open_position_select.selectedIndex = superDrag.superDrag.tabOpenPosition;
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.text_type;
@@ -512,6 +521,16 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_tab_open_position() {
+        const _select = document.getElementById("tabOpenPosition");
+        if (!_select.options.length) {
+            for (let i = 0; i < _tab_open_position.length; i++) {
+                _select.add(new Option(_tab_open_position[i], i, false));
+            }
+        }
+        return _select;
+    }
+
     function _init_text_type(_id) {
         const _select = document.getElementById("text_type_" + _id);
         if (!_select.options.length) {
@@ -548,7 +567,7 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (let i = 0; i < _build_in_seach_engines.length; i++) {
                 _select.add(new Option(_build_in_seach_engines[i].name, i, false));
             }
-            _select.add(new Option(browser.i18n.getMessage("custom_search"), -1,
+            _select.add(new Option(chrome.i18n.getMessage("custom_search"), -1,
                 false, false));
         }
         return _select;
@@ -560,7 +579,7 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (let i = 0; i < _build_in_seach_engines.length; i++) {
                 _select.add(new Option(_build_in_seach_engines[i].name, i, false));
             }
-            _select.add(new Option(browser.i18n.getMessage("custom_search"), -1,
+            _select.add(new Option(chrome.i18n.getMessage("custom_search"), -1,
                 false, false));
         }
         return _select;
@@ -572,7 +591,7 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
             for (let i = 0; i < _build_in_seach_engines_for_img.length; i++) {
                 _select.add(new Option(_build_in_seach_engines_for_img[i].name, i, false));
             }
-            _select.add(new Option(browser.i18n.getMessage("custom_search"), -1,
+            _select.add(new Option(chrome.i18n.getMessage("custom_search"), -1,
                 false, false));
         }
         return _select;
@@ -647,6 +666,12 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     function _save_open_type_open_links(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
         superDrag.superDrag.openLinksOpenType = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
+    function _save_tab_open_position(_select, superDrag) {// select
+        const _v = _select.options[_select.selectedIndex].value;
+        superDrag.superDrag.tabOpenPosition = Number(_v);
         _save(superDrag.superDrag)
     }
 
@@ -787,7 +812,7 @@ browser.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     }
 
     function _save(superDrag) {
-        browser.storage.sync.set({superDrag: superDrag}, function () {
+        chrome.storage.sync.set({superDrag: superDrag}, function () {
         });
     }
 })
