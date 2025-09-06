@@ -1,40 +1,52 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message['flag'] == 'openTable') {
-    chrome.tabs.query({currentWindow: true}, tabs => {
-      // console.log(tabs)
-      // console.log(message);
-      if (typeof message['url'] == "string") {
-        for (const tab of tabs.reverse()) {
-          if (tab.hasOwnProperty("openerTabId") || tab.active == true) {
-            chrome.tabs.create({index: tab.index + 1, url: message['url'], openerTabId: tab.id, active: message['active']});
-            return;
-          }
+    // 使用后台脚本原始的、正确的方式获取设置，并提供默认值
+    chrome.storage.sync.get({superDrag: {tabOpenPosition: 0}}, function(result) {
+      const tabOpenPosition = (result.superDrag && result.superDrag.tabOpenPosition) || 0;
+      
+      // 核心修正：直接使用 sender.tab 作为最可靠的参考
+      const referenceTab = sender.tab;
+      
+      if (!referenceTab) {
+        console.error('SuperDrag: 无法获取源标签页.');
+        return;
+      }
+
+      const createInRight = tabOpenPosition === 0;
+
+      if (typeof message['url'] === "string") {
+        // 单个URL处理
+        let createData = {
+          url: message['url'],
+          active: message['active'],
+          openerTabId: referenceTab.id
+        };
+        if (createInRight) {
+          createData.index = referenceTab.index + 1;
         }
-      } else {
-        for (const tab of tabs.reverse()) {
-          if (tab.hasOwnProperty("openerTabId") || tab.active == true) {
-            for (const i in message['url']){
-              if (message['active'] == true){
-                if (i == 0){
-                  chrome.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: tab.id, active: message['active'] });
-                } else {
-                  chrome.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: tab.id, active: false });
-                }
-              } else {
-                chrome.tabs.create({ index: tab.index + Number(i) + 1, url: message['url'][i]['url'], openerTabId: tab.id, active: message['active'] });
-              }
-            }
-            return;
+        chrome.tabs.create(createData);
+
+      } else if (Array.isArray(message['url'])) {
+        // 多个URL处理
+        message['url'].forEach((item, i) => {
+          let createData = {
+            url: item.url,
+            active: message['active'] ? (i === 0) : false,
+            openerTabId: referenceTab.id
+          };
+          if (createInRight) {
+            createData.index = referenceTab.index + 1 + i;
           }
-        }
+          chrome.tabs.create(createData);
+        });
       }
     });
+    // 异步响应需要返回 true
+    return true;
   } else if (message['flag'] == 'download') {
     chrome.downloads.download({
       url: message['url'],
       saveAs: message['saveAs']
-    },function(downloadId) {
-        console.log(downloadId);
     });
   }
   sendResponse({status: 'ok'});

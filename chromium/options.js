@@ -41,6 +41,10 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         "change", function () {
             _save_open_type_open_links(this, superDrag);
         }, false);
+    document.getElementById("tabOpenPosition").addEventListener(
+        "change", function () {
+            _save_tab_open_position(this, superDrag);
+        }, false);
     for (i = 0; i < 4; i++) {
         document.getElementById("text_type_" + i).addEventListener(
             "change", function () {
@@ -199,6 +203,8 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     document.getElementById('openLinksDesc2').innerHTML = chrome.i18n.getMessage('openLinksDesc2');
     document.getElementById('openLinksDesc3').innerHTML = chrome.i18n.getMessage('openLinksDesc3');
     document.getElementById('openLinksPrompt').innerHTML = chrome.i18n.getMessage('openLinksPrompt');
+    document.getElementById('tabOpenPositionDesc').innerHTML = chrome.i18n.getMessage('tabOpenPositionDesc');
+    document.getElementById('tabOpenPositionPrompt').innerHTML = chrome.i18n.getMessage('tabOpenPositionPrompt');
     document.getElementById('effect_text_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
     document.getElementById('effect_link_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
     document.getElementById('effect_img_prompt').innerHTML = chrome.i18n.getMessage('effectPrompt');
@@ -236,6 +242,9 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
 
     _open_links_select = _init_open_type_open_links()
     _open_links_select.selectedIndex = superDrag.superDrag.openLinksOpenType;
+
+    _tab_open_position_select = _init_tab_open_position()
+    _tab_open_position_select.selectedIndex = superDrag.superDrag.tabOpenPosition;
 
     for (i = 0; i < 4; i++) {
         types = superDrag.superDrag.text_type;
@@ -512,6 +521,16 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
         return _select;
     }
 
+    function _init_tab_open_position() {
+        const _select = document.getElementById("tabOpenPosition");
+        if (!_select.options.length) {
+            for (let i = 0; i < _tab_open_position.length; i++) {
+                _select.add(new Option(_tab_open_position[i], i, false));
+            }
+        }
+        return _select;
+    }
+
     function _init_text_type(_id) {
         const _select = document.getElementById("text_type_" + _id);
         if (!_select.options.length) {
@@ -647,6 +666,12 @@ chrome.storage.sync.get({superDrag: _getDefault()}, function (superDrag) {
     function _save_open_type_open_links(_select, superDrag) {// select
         const _v = _select.options[_select.selectedIndex].value;
         superDrag.superDrag.openLinksOpenType = Number(_v);
+        _save(superDrag.superDrag)
+    }
+
+    function _save_tab_open_position(_select, superDrag) {// select
+        const _v = _select.options[_select.selectedIndex].value;
+        superDrag.superDrag.tabOpenPosition = Number(_v);
         _save(superDrag.superDrag)
     }
 
