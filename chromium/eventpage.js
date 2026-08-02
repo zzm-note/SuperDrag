@@ -1,3 +1,11 @@
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('SuperDrag extension installed');
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  console.log('SuperDrag extension startup');
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message['flag'] == 'openTable') {
     chrome.tabs.query({currentWindow: true}, tabs => {
